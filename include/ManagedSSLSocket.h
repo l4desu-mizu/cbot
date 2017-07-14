@@ -1,6 +1,7 @@
 #pragma once
 #include "NameLookup.h"
 #include <openssl/ssl.h>
+#include <string>
 
 class ManagedSSLSocket{
 	public:
@@ -12,10 +13,11 @@ class ManagedSSLSocket{
 		int send(const char* message,int length);
 		std::string receive();
 	private:
-		const int port;
 		const std::string certFile;
 		const std::string certKeyFile;
+		BIO* bio;
 		SSL* ssl=NULL;
 		SSL_CTX* sslContext=NULL;
-		NameLookup::NameInfo* targetAddress=NULL;
+		void initSSL();
+		const char* createTargetHost(std::string host, int port);
 };
