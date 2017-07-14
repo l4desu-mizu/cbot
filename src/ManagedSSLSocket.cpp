@@ -3,19 +3,8 @@
 #include <sstream>
 #include <iostream>
 
-ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port){
-	initSSL();
-	bio = BIO_new_connect(createTargetHost(hostname,port).c_str());
-	if(bio==NULL){
-		//ERROR
-		std::clog << "bio create failed" << std::endl;
-	}
-	//connect with handshake
-	if(BIO_do_connect(bio)<=0){
-		//ERROR
-		std::clog << "do connect failed" << std::endl;
-	}
-}
+ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port)
+:ManagedSSLSocket(hostname,port,"",""){}
 
 ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile):
 certFile(certFile),
@@ -30,18 +19,20 @@ certKeyFile(certKeyFile){
 	//}
 
 	//supply your own certs
-	int use_cert;
-	int use_key;
+	if(certFile.size()>0&&certKeyFile.size()>0){
+		int use_cert;
+		int use_key;
 
-	use_cert = SSL_CTX_use_certificate_file(sslContext, certFile.c_str(), SSL_FILETYPE_PEM);
-	use_key = SSL_CTX_use_PrivateKey_file(sslContext, certKeyFile.c_str(), SSL_FILETYPE_PEM);
-	if(use_cert!=1){
-		//ERROR
-		std::clog << "use_cert error" << std::endl;
-	}
-	if(use_key!=1){
-		//ERROR
-		std::clog << "use_key error" << std::endl;
+		use_cert = SSL_CTX_use_certificate_file(sslContext, certFile.c_str(), SSL_FILETYPE_PEM);
+		use_key = SSL_CTX_use_PrivateKey_file(sslContext, certKeyFile.c_str(), SSL_FILETYPE_PEM);
+		if(use_cert!=1){
+			//ERROR
+			std::clog << "use_cert error" << std::endl;
+		}
+		if(use_key!=1){
+			//ERROR
+			std::clog << "use_key error" << std::endl;
+		}
 	}
 	bio=BIO_new_ssl_connect(sslContext);
 	BIO_get_ssl(bio, &ssl);
