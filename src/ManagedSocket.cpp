@@ -84,7 +84,6 @@ int ManagedSocket::send(const char* message,int length){
 	}
 	int error=0;
 	//save the number of bytes in error (or -1 for error)
-	std::clog << "none ssl" << std::endl;
 	error=::send(socketfd,message,length,0);//use extern C socket send
 	if(error<=0){
 		//ERROR
