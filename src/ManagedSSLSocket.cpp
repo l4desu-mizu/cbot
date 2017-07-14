@@ -5,13 +5,15 @@
 
 ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port){
 	initSSL();
-	bio = BIO_new_connect(createTargetHost(hostname,port));
+	bio = BIO_new_connect(createTargetHost(hostname,port).c_str());
 	if(bio==NULL){
 		//ERROR
+		std::clog << "bio create failed" << std::endl;
 	}
 	//connect with handshake
 	if(BIO_do_connect(bio)<=0){
 		//ERROR
+		std::clog << "do connect failed" << std::endl;
 	}
 }
 
@@ -35,24 +37,26 @@ certKeyFile(certKeyFile){
 	use_key = SSL_CTX_use_PrivateKey_file(sslContext, certKeyFile.c_str(), SSL_FILETYPE_PEM);
 	if(use_cert!=1){
 		//ERROR
-		std::cout << "use_cert error" << std::endl;
+		std::clog << "use_cert error" << std::endl;
 	}
 	if(use_key!=1){
 		//ERROR
-		std::cout << "use_key error" << std::endl;
+		std::clog << "use_key error" << std::endl;
 	}
 	bio=BIO_new_ssl_connect(sslContext);
 	BIO_get_ssl(bio, &ssl);
 	SSL_set_mode(ssl,SSL_MODE_AUTO_RETRY);
-	BIO_set_conn_hostname(bio,createTargetHost(hostname,port));
+	BIO_set_conn_hostname(bio,createTargetHost(hostname,port).c_str());
 
 	if(BIO_do_connect(bio) <= 0){
 		//ERROR
 		/* Handle failed connection */
+		std::clog << "do connect failed" << std::endl;
 	}
 	if(SSL_get_verify_result(ssl) != X509_V_OK){
 		//SSL verification
 		/* Handle the failed verification */
+		std::clog << "ssl verify failed" << std::endl;
 	}
 }
 
@@ -73,10 +77,10 @@ void ManagedSSLSocket::initSSL(){
 	OpenSSL_add_all_algorithms();
 }
 
-const char* ManagedSSLSocket::createTargetHost(std::string host, int port){
+std::string ManagedSSLSocket::createTargetHost(std::string host, int port){
 	std::stringstream targetHost;
 	targetHost << host << ":" << port;
-	return targetHost.str().c_str();
+	return targetHost.str();
 }
 
 void ManagedSSLSocket::disconnect(){
@@ -92,8 +96,10 @@ int ManagedSSLSocket::send(const char* message,int length){
 	res=BIO_write(bio,message,length);
 	if(res<=0){
 		//ERROR
+		std::clog << "writing failed" << std::endl;
 		if(! BIO_should_retry(bio)){
 			//Handle failed write
+			std::clog << "rewriting failed" << std::endl;
 		}
 	}
 	return res;
@@ -111,10 +117,13 @@ std::string ManagedSSLSocket::receive(){
 			out << buff;
 		}else if(read==0){
 			//No data or closed
+			std::clog << "no data read or socket closed" << std::endl;
 		}else{
 			//ERROR occured
+			std::clog << "some reading error, trying again" << std::endl;
 			if(! BIO_should_retry(bio)){
 				//Handle failed read
+				std::clog << "rereading failed" << std::endl;
 			}
 		}
 	}

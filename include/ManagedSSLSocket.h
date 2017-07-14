@@ -19,5 +19,5 @@ class ManagedSSLSocket{
 		SSL* ssl=NULL;
 		SSL_CTX* sslContext=NULL;
 		void initSSL();
-		const char* createTargetHost(std::string host, int port);
+		std::string createTargetHost(std::string host, int port);
 };
