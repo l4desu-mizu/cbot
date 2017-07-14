@@ -1,7 +1,6 @@
 #pragma once
 #include "NameLookup.h"
 #include <string>
-#include <openssl/ssl.h>
 
 class ManagedSocket{
 	public:

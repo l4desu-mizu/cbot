@@ -2,11 +2,12 @@
 #include <unistd.h>
 #include <sstream>
 #include <iostream>
+#include <netinet/in.h>
 
 ManagedSocket::ManagedSocket(std::string hostname, int port):
-port(port),
+port(htons(port)){
 	this->targetAddress=new NameLookup::NameInfo(hostname);
-	const addrinfo* tmp=this->targetAddress->getAddressInfo();
+	addrinfo* tmp=this->targetAddress->getAddressInfo();
 	socketfd = socket(tmp->ai_family,tmp->ai_socktype,tmp->ai_protocol);
 	if(socketfd<0){
 		//ERROR
@@ -16,17 +17,19 @@ port(port),
 	int size;
 	if(tmp->ai_family==AF_INET){
 		size=sizeof(sockaddr_in);
-		std::clog << "ipv4" << std::endl;
+		sockaddr_in* foo=(sockaddr_in*)tmp->ai_addr;
+		foo->sin_port=this->port;
 	}else if(tmp->ai_family==AF_INET6){
 		size=sizeof(sockaddr_in6);
-		std::clog << "ipv6" << std::endl;
+		((sockaddr_in6*)tmp->ai_addr)->sin6_port=this->port;
+		sockaddr_in6* foo=(sockaddr_in6*)tmp->ai_addr;
 	}else{
 		size=sizeof(sockaddr);
 		std::clog << "ipv dunno" << std::endl;
 	}
-	if(int error=connect(socketfd,tmp->ai_addr,size)<0){//TODO: ->sigpipe (pipe closed here)
+	if(int error=connect(socketfd,tmp->ai_addr,size)<0){
 		//ERROR
-		std::clog << "error " << error << " errno " << errno << "size of" << size << std::endl;
+		std::clog << "connect error" << std::endl;
 		switch(errno){
 			case EBADF: std::clog << "bad fd" << std::endl; break;
 			case ENOTSOCK: std::clog << "no socket fd" << std::endl; break;
@@ -41,7 +44,6 @@ port(port),
 			case EALREADY: std::clog << "connection pending and non blocking" << std::endl; break;
 			default: std::clog << "none of the above" << std::endl;
 		}
-		std::clog << "connect error" << std::endl;
 	}
 }
 
@@ -57,11 +59,15 @@ ManagedSocket::~ManagedSocket(){
 void ManagedSocket::disconnect(){
 	if(socketfd>=0){
 		shutdown(socketfd,2);//stop sending and receiving
+		close(socketfd);
 		socketfd=-1;
 	}
 }
 
 int ManagedSocket::send(std::string message){
+	if(socketfd<0){
+		return socketfd;
+	}
 	int error=0;
 	//save the number of bytes in error (or -1 for error)
 	error=::send(socketfd,message.c_str(),message.size(),0);//use extern C socket send
@@ -73,6 +79,9 @@ int ManagedSocket::send(std::string message){
 }
 
 int ManagedSocket::send(const char* message,int length){
+	if(socketfd<0){
+		return socketfd;
+	}
 	int error=0;
 	//save the number of bytes in error (or -1 for error)
 	std::clog << "none ssl" << std::endl;
@@ -85,6 +94,9 @@ int ManagedSocket::send(const char* message,int length){
 }
 
 std::string ManagedSocket::receive(){
+	if(socketfd<0){
+		return "";
+	}
 	std::stringstream messageBuilder;
 	const int bufferSize=256;//arbitrary buffersize (chosen by fair dice roll, not)
 	int bytesRead=bufferSize;
