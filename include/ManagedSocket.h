@@ -10,6 +10,7 @@ class ManagedSocket{
 		~ManagedSocket();
 		void disconnect();
 		int send(std::string message);
+		int send(const char* message,int length);
 		std::string receive();
 	private:
 		int socketfd;
