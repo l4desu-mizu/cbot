@@ -2,7 +2,9 @@
 
 namespace NameLookup{
 NameInfo::NameInfo(std::string hostname){
-	getaddrinfo(hostname.c_str(),NULL,NULL,&this->hostInfo);
+	if(getaddrinfo(hostname.c_str(),NULL,NULL,&this->hostInfo)!=0){
+		//ERROR not resolving
+	}
 }
 
 NameInfo::~NameInfo(){
