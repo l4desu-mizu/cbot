@@ -4,5 +4,5 @@
 class Connector{
 	public:
 		virtual ~Connector(){}
-		virtual void sendTextMessage(std::string message)=0;
+		virtual void sendTextMessage(const std::string& message)=0;
 };

@@ -58,7 +58,7 @@ class MumbleConnector: public Connector{
 	public:
 		MumbleConnector(std::string host,int port=64738); //mumble default port
 		~MumbleConnector();
-		void sendTextMessage(std::string message);
+		void sendTextMessage(const std::string& message);
 	private:
 		ManagedSSLSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
