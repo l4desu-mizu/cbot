@@ -61,18 +61,22 @@ class MumbleConnector: public Connector{
 		void sendTextMessage(std::string message);
 	private:
 		ManagedSSLSocket* socket=NULL;
+		MumbleProto::CryptSetup udpCrypto;
 		bool receiveLoopRuns=false;
+		bool ping=false;
 		std::thread receiveThread;
+		std::thread pingThread;
 		void handleReceives();
 		void connect();
 		void auth();
 		void disconnect();
 		void sendProtoMessage(const MumbleMessageType& msgType,const std::string& message);
+		void sendProtoMessage(const MumbleMessageType& msgType,const ::google::protobuf::Message& message);
 		void dispatchMessage(const MumbleHeader& header, const std::string& message);
 
-		void handlePing(MumbleProto::Ping pingMsg);
+		void pingLoop();
+
 		//void handleText(MumbleProto::TextMessage textMsg);
-		void handleCrypto(MumbleProto::CryptSetup cryptMsg);
 		//void handleServerSync(MumbleProto::ServerSync syncMsg);
 		//void handleReject(MumbleProto::Reject rejectMsg);
 		//void handleChannelState(MumbleProto::ChannelState stateMsg);

@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <chrono>
+
+#define TIME_IN_MS std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count()
 
 MumbleConnector::MumbleConnector(std::string host,int port){
 	//open socket
@@ -10,7 +13,9 @@ MumbleConnector::MumbleConnector(std::string host,int port){
 	//socket=new ManagedSSLSocket(host,port,"./cert/mumble_bot.cert","./cert/mumble_bot_cert.key");//presumably done...
 	socket=new ManagedSSLSocket(host,port);//presumably done...
 	receiveLoopRuns=true;
-	receiveThread=std::thread(&MumbleConnector::receiveLoop,this);
+	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
+	ping=true;
+	pingThread=std::thread(&MumbleConnector::pingLoop,this);
 	std::cout << "socket created" << std::endl;
 	std::cout << "connecting" << std::endl;
 	connect();
@@ -22,6 +27,8 @@ MumbleConnector::~MumbleConnector(){
 	std::cout << "connector ends" << std::endl;
 	receiveLoopRuns=false;
 	receiveThread.join();
+	ping=false;
+	pingThread.join();
 	if(socket!=NULL){
 		delete socket;
 		socket=NULL;
@@ -43,6 +50,7 @@ void MumbleConnector::handleReceives(){
 		}else{
 				std::cout << "none" << std::endl;
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 	}
 }
 
@@ -80,7 +88,13 @@ void MumbleConnector::sendProtoMessage(const MumbleMessageType& msgType,const st
 	protoMessage.flush();
 	socket->send(protoMessage.str());
 }
+void MumbleConnector::sendProtoMessage(const MumbleMessageType& msgType,const ::google::protobuf::Message& message){
+	std::string str_message;
+	message.SerializeToString(&str_message);
+	sendProtoMessage(msgType,str_message);
+}
 
+//{{{
 void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::string& message){
 	switch(header.getMessageType()){
 		case MumbleMessageType::Version:{
@@ -90,13 +104,6 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 			std::string versionDisplay;
 			google::protobuf::TextFormat::PrintToString(v,&versionDisplay);
 			std::clog<< versionDisplay <<std::endl;
-			break;
-		}
-		case MumbleMessageType::Ping:{
-			std::clog<< "ping" <<std::endl;
-			MumbleProto::Ping p;
-			p.ParseFromString(message);
-			std::thread(&MumbleConnector::handlePing,this,std::ref(p)).detach();
 			break;
 		}
 		case MumbleMessageType::Reject:{
@@ -129,10 +136,7 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 		}
 		case MumbleMessageType::CryptSetup:{
 			std::clog<< "CryptSetup" <<std::endl;
-			MumbleProto::CryptSetup cs;
-			cs.ParseFromString(message);
-			handleCrypto(cs);
-			std::thread(&MumbleConnector::handleCrypto,this,std::ref(cs)).detach();
+			udpCrypto.ParseFromString(message);
 			break;
 		}
 		case MumbleMessageType::UserList:{
@@ -155,6 +159,7 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 			std::clog<< "SuggestConfig" <<std::endl;
 			break;
 		}
+		case MumbleMessageType::Ping:{ /*irrelevant*/ std::clog<< "pong" <<std::endl; break; }
 		case MumbleMessageType::VoiceTarget: /*future feature?*/ std::clog<< "VoiceTarget" <<std::endl; break;
 		case MumbleMessageType::ChannelRemove: /*probably irrelevant*/ std::clog<< "ChannelRemove" <<std::endl; break;
 		case MumbleMessageType::UserRemove: /*probably irrelevant*/ std::clog<< "UserRemove" <<std::endl; break;
@@ -169,9 +174,13 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 		default: std::clog<< "dunno what this is" <<std::endl; break;
 	}
 }
+//}}}
 
-void MumbleConnector::handlePing(MumbleProto::Ping pingMsg){
-	std::cout << "send pong?" <<std::endl;
-}
-void MumbleConnector::handleCrypto(MumbleProto::CryptSetup cryptMsg){
+void MumbleConnector::pingLoop(){
+	while(ping){
+		MumbleProto::Ping pingPackage;
+		pingPackage.set_timestamp(TIME_IN_MS);
+		sendProtoMessage(MumbleMessageType::Ping,pingPackage);
+		std::this_thread::sleep_for(std::chrono::seconds(10));
+	}
 }
