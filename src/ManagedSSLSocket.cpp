@@ -105,7 +105,7 @@ std::string ManagedSSLSocket::receive(){
 	while(read>=length){
 		read=BIO_read(bio, buff,length);
 		if(read>0){
-			out << buff;
+			out.write(buff,read);
 		}else if(read==0){
 			//No data or closed
 			std::clog << "no data read or socket closed" << std::endl;
@@ -118,5 +118,6 @@ std::string ManagedSSLSocket::receive(){
 			}
 		}
 	}
+	out.flush();
 	return out.str();
 }
