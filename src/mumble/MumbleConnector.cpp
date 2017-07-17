@@ -6,6 +6,7 @@
 #include <chrono>
 
 #define TIME_IN_MS std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count()
+#define PING_TIMEOUT 20
 
 MumbleConnector::MumbleConnector(std::string host,int port){
 	//open socket
@@ -181,6 +182,6 @@ void MumbleConnector::pingLoop(){
 		MumbleProto::Ping pingPackage;
 		pingPackage.set_timestamp(TIME_IN_MS);
 		sendProtoMessage(MumbleMessageType::Ping,pingPackage);
-		std::this_thread::sleep_for(std::chrono::seconds(10));
+		std::this_thread::sleep_for(std::chrono::seconds(PING_TIMEOUT));
 	}
 }
