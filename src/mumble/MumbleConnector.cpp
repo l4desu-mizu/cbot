@@ -15,17 +15,15 @@ MumbleConnector::MumbleConnector(std::string host,int port){
 	socket=new ManagedSSLSocket(host,port);//presumably done...
 	receiveLoopRuns=true;
 	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
-	std::cout << "socket created" << std::endl;
-	std::cout << "connecting" << std::endl;
+	std::clog << "connecting to Mumble" << std::endl;
 	connect();
-	std::cout << "authenticating" << std::endl;
 	auth();
 	ping=true;
 	pingThread=std::thread(&MumbleConnector::pingLoop,this);
 }
 
 MumbleConnector::~MumbleConnector(){
-	std::cout << "connector ends" << std::endl;
+	std::clog << "connector ends" << std::endl;
 	receiveLoopRuns=false;
 	receiveThread.join();
 	ping=false;
@@ -75,20 +73,14 @@ void MumbleConnector::connect(){
 	myVersion.set_os_version(os_version.c_str());
 	myVersion.SerializeToString(&buffer);
 	sendProtoMessage(MumbleMessageType::Version,buffer);
-	std::cout << "connected2" << std::endl;
 }
 
 void MumbleConnector::auth(){
 	MumbleProto::Authenticate authMessage;
 	authMessage.set_username("Test");
-	std::cout << "authing" << std::endl;
 	std::string buffer;
 	authMessage.SerializeToString(&buffer);
 	sendProtoMessage(MumbleMessageType::Authenticate,buffer);
-	std::cout << "authed" << std::endl;
-}
-
-void MumbleConnector::disconnect(){
 }
 
 void MumbleConnector::sendProtoMessage(const MumbleMessageType& msgType,const std::string& message){
@@ -112,9 +104,6 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 			std::clog<< "version: " <<std::endl;
 			MumbleProto::Version v;
 			v.ParseFromString(message);
-			std::string versionDisplay;
-			google::protobuf::TextFormat::PrintToString(v,&versionDisplay);
-			std::clog<< versionDisplay <<std::endl;
 			break;
 		}
 		case MumbleMessageType::Reject:{
