@@ -98,7 +98,7 @@ int ManagedSSLSocket::send(std::string message){
 	return this->send(message.c_str(),message.size());
 }
 
-int ManagedSSLSocket::send(const char* message,int length){
+int ManagedSSLSocket::send(const char* message,const int length){
 	int res;
 	res=BIO_write(bio,message,length);
 	if(res<=0){
@@ -106,7 +106,7 @@ int ManagedSSLSocket::send(const char* message,int length){
 		std::clog << "writing failed" << std::endl;
 		if(! BIO_should_retry(bio)){
 			//Handle failed write
-			std::clog << "rewriting failed" << std::endl;
+			std::clog << "final writing failed" << std::endl;
 		}
 	}
 	return res;
@@ -130,10 +130,28 @@ std::string ManagedSSLSocket::receive(){
 			std::clog << "some reading error, trying again" << std::endl;
 			if(! BIO_should_retry(bio)){
 				//Handle failed read
-				std::clog << "rereading failed" << std::endl;
+				std::clog << "reading failed" << std::endl;
 			}
 		}
 	}
 	out.flush();
 	return out.str();
+}
+int ManagedSSLSocket::receive(char* buff,const int length){
+	int read;
+	while(read>=length){
+		read=BIO_read(bio, buff,length);
+		if(read==0){
+			//No data or closed
+			std::clog << "no data read or socket closed" << std::endl;
+		}else if(read<0){
+			//ERROR occured
+			std::clog << "some reading error, trying again" << std::endl;
+			if(! BIO_should_retry(bio)){
+				//Handle failed read
+				std::clog << "reading failed" << std::endl;
+			}
+		}
+		return read;
+	}
 }

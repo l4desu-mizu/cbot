@@ -9,8 +9,9 @@ class ManagedSSLSocket{
 		~ManagedSSLSocket();
 		void disconnect();
 		int send(std::string message);
-		int send(const char* message,int length);
+		int send(const char* message,const int length);
 		std::string receive();
+		int receive(char* buff,const int length);
 	private:
 		const std::string certFile;
 		const std::string certKeyFile;
