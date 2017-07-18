@@ -174,14 +174,37 @@ void MumbleConnector::handle(const MumbleProto::Ping& pong){
 	std::clog<< "pong" <<std::endl;
 }
 
-//	case MumbleMessageType::VoiceTarget: /*future feature?*/ std::clog<< "VoiceTarget" <<std::endl; break;
-//	case MumbleMessageType::ChannelRemove: /*probably irrelevant*/ std::clog<< "ChannelRemove" <<std::endl; break;
-//	case MumbleMessageType::UserRemove: /*probably irrelevant*/ std::clog<< "UserRemove" <<std::endl; break;
-//	case MumbleMessageType::BanList: /*irrelevant*/ std::clog<< "BanList" <<std::endl; break;
-//	case MumbleMessageType::ACL: /*irrelevant*/ std::clog<< "ACL" <<std::endl; break;
-//	case MumbleMessageType::ContextActionModify: /*irrelevant*/ std::clog<< "ContextActionAdd" <<std::endl; break;
-//	case MumbleMessageType::ContextAction: /*irrelevant*/ std::clog<< "ContextAction" <<std::endl; break;
-//	case MumbleMessageType::UserStats: /*irrelevant*/ std::clog<< "UserStats" <<std::endl; break;
-//	case MumbleMessageType::RequestBlob: /*irrelevant*/ std::clog<< "RequestBlob" <<std::endl; break;
-//	case MumbleMessageType::UDPTunnel: /*unused*/ break;
-//	case MumbleMessageType::Authenticate: /*should not be recieved by client*/ std::clog<< "received auth message?" <<std::endl; break;
+//unused handler
+void MumbleConnector::handle(const MumbleProto::VoiceTarget& voiceMsg){
+	/*future feature?*/ std::clog<< "VoiceTarget" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
+	/*probably irrelevant*/ std::clog<< "ChannelRemove" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::UserRemove& userRemoveMsg){
+	/*probably irrelevant*/ std::clog<< "UserRemove" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::BanList& banMsg){
+	/*irrelevant*/ std::clog<< "BanList" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::ACL& aclMsg){
+	/*irrelevant*/ std::clog<< "ACL" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::ContextActionModify& contextModifyMsg){
+	/*irrelevant*/ std::clog<< "ContextActionAdd" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::ContextAction& contextMsg){
+	/*irrelevant*/ std::clog<< "ContextAction" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::UserStats& userStatMsg){
+	/*irrelevant*/ std::clog<< "UserStats" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::RequestBlob& blobMsg){
+	/*irrelevant*/ std::clog<< "RequestBlob" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::UDPTunnel& udpMsg){
+	/*unused*/
+}
+void MumbleConnector::handle(const MumbleProto::Authenticate& authMsg){
+	/*should not be recieved by client*/ std::clog<< "received auth message?" <<std::endl;
+}

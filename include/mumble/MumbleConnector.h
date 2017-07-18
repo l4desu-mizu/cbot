@@ -96,15 +96,15 @@ class MumbleConnector: public Connector{
 		void handle(const MumbleProto::Ping& pong);
 
 		//these are currently ignored, therefore the implementation
-		void handle(const MumbleProto::VoiceTarget& voiceMsg){}
-		void handle(const MumbleProto::ChannelRemove& channelMsg){}
-		void handle(const MumbleProto::UserRemove& userRemoveMsg){}
-		void handle(const MumbleProto::BanList& banMsg){}
-		void handle(const MumbleProto::ACL& aclMsg){}
-		void handle(const MumbleProto::ContextActionModify& contextModifyMsg){}
-		void handle(const MumbleProto::ContextAction& contextMsg){}
-		void handle(const MumbleProto::UserStats& userStatMsg){}
-		void handle(const MumbleProto::RequestBlob& blobMsg){}
-		void handle(const MumbleProto::UDPTunnel& udpMsg){}
-		void handle(const MumbleProto::Authenticate& authMsg){}
+		void handle(const MumbleProto::VoiceTarget& voiceMsg);
+		void handle(const MumbleProto::ChannelRemove& channelMsg);
+		void handle(const MumbleProto::UserRemove& userRemoveMsg);
+		void handle(const MumbleProto::BanList& banMsg);
+		void handle(const MumbleProto::ACL& aclMsg);
+		void handle(const MumbleProto::ContextActionModify& contextModifyMsg);
+		void handle(const MumbleProto::ContextAction& contextMsg);
+		void handle(const MumbleProto::UserStats& userStatMsg);
+		void handle(const MumbleProto::RequestBlob& blobMsg);
+		void handle(const MumbleProto::UDPTunnel& udpMsg);
+		void handle(const MumbleProto::Authenticate& authMsg);
 };
