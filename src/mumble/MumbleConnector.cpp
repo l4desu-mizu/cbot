@@ -53,7 +53,7 @@ void MumbleConnector::handleReceives(){
 
 			msg.resize(header.getMessageLength());
 			tmp.read(&msg[0],header.getMessageLength());
-			dispatchMessage(header,msg);
+			std::thread(&MumbleConnector::dispatchMessage,this,header,msg).detach();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 	}
@@ -103,6 +103,7 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 #define MUMBLE_MESSAGE_TYPE(x) case MumbleMessageType:: x:{\
 		MumbleProto:: x tmp;\
 		tmp.ParseFromString(message);\
+		handle(tmp);\
 		break;\
 	}
 	switch(header.getMessageType()){
