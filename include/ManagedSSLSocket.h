@@ -1,5 +1,4 @@
 #pragma once
-#include "NameLookup.h"
 #include <openssl/ssl.h>
 #include <string>
 
