@@ -76,15 +76,15 @@ class MumbleConnector: public Connector{
 
 		void pingLoop();
 
-		//void handleText(MumbleProto::TextMessage textMsg);
-		//void handleServerSync(MumbleProto::ServerSync syncMsg);
-		//void handleReject(MumbleProto::Reject rejectMsg);
-		//void handleChannelState(MumbleProto::ChannelState stateMsg);
-		//void handleUserState(MumbleProto::UserState stateMsg);
-		//void handlePermissionDenied(MumbleProto::PermissionDenied deniedMsg);
-		//void handlePermissionQuery(MumbleProto::PermissionQuery queryMsg);
-		//void handleQueryUsers(MumbleProto::QueryUsers queryMsg);
-		//void handleCodec(MumbleProto::CodecVersion codecMsg);
-		//void handleServerConfig(MumbleProto::ServerConfig configMsg);
-		//void handleSuggestConfig(MumbleProto::SuggestConfig configMsg);
+		//void handle(const MumbleProto::TextMessage& textMsg);
+		//void handle(const MumbleProto::ServerSync& syncMsg);
+		//void handle(const MumbleProto::Reject& rejectMsg);
+		//void handle(const MumbleProto::ChannelState& stateMsg);
+		//void handle(const MumbleProto::UserState& stateMsg);
+		//void handle(const MumbleProto::PermissionDenied& deniedMsg);
+		//void handle(const MumbleProto::PermissionQuery& queryMsg);
+		//void handle(const MumbleProto::QueryUsers& queryMsg);
+		//void handle(const MumbleProto::CodecVersion& codecMsg);
+		//void handle(const MumbleProto::ServerConfig& configMsg);
+		//void handle(const MumbleProto::SuggestConfig& configMsg);
 };
