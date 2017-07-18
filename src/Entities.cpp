@@ -1,8 +1,8 @@
 #include "Entities.h"
 #include <algorithm>
 
-bool operator==(const Entity& lValue, const Entity& rValue){
-	return lValue.id==rValue.id&&lValue.type==rValue.type;
+bool Entity::operator==(const Entity& otherEntity){
+	return this->id==otherEntity.id&&this->type==otherEntity.type;
 }
 
 EntityList::EntityList(){}

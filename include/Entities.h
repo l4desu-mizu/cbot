@@ -6,11 +6,12 @@ enum EntityType{
 	Channel,
 	User
 };
-struct Entity{
-	int id;
-	std::string name;
-	EntityType type;
-	friend bool operator==(const Entity& lValue, const Entity& rValue);
+class Entity{
+	public:
+		int id;
+		std::string name;
+		EntityType type;
+		bool operator==(const Entity& otherEntity);
 };
 
 class EntityList{
