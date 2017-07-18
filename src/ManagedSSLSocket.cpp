@@ -7,9 +7,6 @@ ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port, bool useEncry
 certFile(""),
 certKeyFile(""){
 	if(useEncrypt){
-		SSL_load_error_strings();
-		ERR_load_BIO_strings();
-		OpenSSL_add_all_algorithms();
 		initSSLSocket(hostname,port);
 	}else{
 		SSL_load_error_strings();
@@ -43,6 +40,9 @@ ManagedSSLSocket::~ManagedSSLSocket(){
 }
 
 void ManagedSSLSocket::initSSLSocket(const std::string& hostname, const int& port){
+	SSL_load_error_strings();
+	ERR_load_BIO_strings();
+	OpenSSL_add_all_algorithms();
 	sslContext=SSL_CTX_new(TLS_client_method());
 	SSL_CTX_set_options(sslContext,SSL_OP_SINGLE_DH_USE);
 
