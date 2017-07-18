@@ -51,7 +51,7 @@ void MumbleConnector::handleReceives(){
 
 				//construct header (should be optimized by compiler?)
 				const uint16_t type=ntohs(*reinterpret_cast<uint16_t*>(pHeader));
-				const uint32_t length=ntohl(*reinterpret_cast<uint32_t*>(pHeader+2));
+				const uint32_t length=ntohl(*reinterpret_cast<uint32_t*>(pHeader+HEADER_TYPE_SIZE));
 				const MumbleHeader header(type,length);
 
 				msg.clear();

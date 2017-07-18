@@ -6,6 +6,8 @@
 #include <iostream>
 
 #define HEADER_SIZE 6
+#define HEADER_TYPE_SIZE 2
+#define HEADER_LENGTH_SIZE 4
 #define MUMBLE_MESSAGE_TYPES_ALL \
     MUMBLE_MESSAGE_TYPE(Version) \
     MUMBLE_MESSAGE_TYPE(UDPTunnel) \
