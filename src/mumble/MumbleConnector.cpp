@@ -8,7 +8,7 @@
 #define TIME_IN_MS std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count()
 #define PING_TIMEOUT 20 //max 30
 
-MumbleConnector::MumbleConnector(std::string host,int port){
+MumbleConnector::MumbleConnector(std::string host,int port):username("Test"),password(""){
 	//open socket
 	//handshake
 	//socket=new ManagedSSLSocket(host,port,"./cert/mumble_bot.cert","./cert/mumble_bot_cert.key");//presumably done...
@@ -77,7 +77,7 @@ void MumbleConnector::connect(){
 
 void MumbleConnector::auth(){
 	MumbleProto::Authenticate authMessage;
-	authMessage.set_username("Test");
+	authMessage.set_username(username);
 	std::string buffer;
 	authMessage.SerializeToString(&buffer);
 	sendProtoMessage(MumbleMessageType::Authenticate,buffer);

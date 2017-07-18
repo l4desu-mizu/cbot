@@ -60,6 +60,8 @@ class MumbleConnector: public Connector{
 		~MumbleConnector();
 		void sendTextMessage(const std::string& message);
 	private:
+		const std::string username;
+		const std::string password;
 		ManagedSSLSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
 		bool receiveLoopRuns=false;
