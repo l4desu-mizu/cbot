@@ -2,8 +2,10 @@
 #include "mumble.pb.h"
 #include "Connector.h"
 #include "ManagedSSLSocket.h"
+#include "Channels.h"
 #include <thread>
 #include <iostream>
+#include <mutex>
 
 #define HEADER_SIZE 6
 #define HEADER_TYPE_SIZE 2
@@ -61,9 +63,12 @@ class MumbleConnector: public Connector{
 		MumbleConnector(std::string host,int port=64738); //mumble default port
 		~MumbleConnector();
 		void sendTextMessage(const std::string& message);
+		ChannelList& getChannels();
 	private:
 		const std::string username;
 		const std::string password;
+		std::mutex channelMutex;
+		ChannelList channels;
 		ManagedSSLSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
 		MumbleProto::Ping pingPackage;

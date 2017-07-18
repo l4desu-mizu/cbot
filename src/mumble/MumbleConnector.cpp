@@ -3,7 +3,6 @@
 #include <google/protobuf/text_format.h>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 #include <chrono>
 
 #define TIME_IN_MS std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count()
@@ -36,6 +35,11 @@ MumbleConnector::~MumbleConnector(){
 }
 
 void MumbleConnector::sendTextMessage(const std::string& message){
+}
+
+ChannelList& MumbleConnector::getChannels(){
+	std::lock_guard<std::mutex> lock(channelMutex);
+	return channels;
 }
 
 void MumbleConnector::handleReceives(){
@@ -142,6 +146,25 @@ void MumbleConnector::handle(const MumbleProto::ServerSync& syncMsg){
 }
 void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	std::clog<< "ChannelState" <<std::endl;
+	if(!stateMsg.has_channel_id()){
+		return;
+	}
+
+	std::lock_guard<std::mutex> lock(channelMutex);
+	const int channelID=stateMsg.channel_id();
+	std::string channelName="";
+	if(stateMsg.has_name()){
+		channelName=stateMsg.name();
+	}
+	const Channel newChannel = {channelID,channelName};
+	channels.add(newChannel);
+}
+void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
+	std::clog<< "ChannelRemove" <<std::endl;
+	std::lock_guard<std::mutex> lock(channelMutex);
+	if(channelMsg.has_channel_id()){
+		channels.remove(channelMsg.channel_id());
+	}
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 	std::clog<< "UserState" <<std::endl;
@@ -182,9 +205,6 @@ void MumbleConnector::handle(const MumbleProto::Ping& pong){
 //unused handler
 void MumbleConnector::handle(const MumbleProto::VoiceTarget& voiceMsg){
 	/*future feature?*/ std::clog<< "VoiceTarget" <<std::endl;
-}
-void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
-	/*probably irrelevant*/ std::clog<< "ChannelRemove" <<std::endl;
 }
 void MumbleConnector::handle(const MumbleProto::UserRemove& userRemoveMsg){
 	/*probably irrelevant*/ std::clog<< "UserRemove" <<std::endl;
