@@ -6,7 +6,7 @@
 #include <chrono>
 
 #define TIME_IN_MS std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count()
-#define PING_TIMEOUT 20
+#define PING_TIMEOUT 20 //max 30
 
 MumbleConnector::MumbleConnector(std::string host,int port){
 	//open socket
@@ -15,13 +15,13 @@ MumbleConnector::MumbleConnector(std::string host,int port){
 	socket=new ManagedSSLSocket(host,port);//presumably done...
 	receiveLoopRuns=true;
 	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
-	ping=true;
-	pingThread=std::thread(&MumbleConnector::pingLoop,this);
 	std::cout << "socket created" << std::endl;
 	std::cout << "connecting" << std::endl;
 	connect();
 	std::cout << "authenticating" << std::endl;
 	auth();
+	ping=true;
+	pingThread=std::thread(&MumbleConnector::pingLoop,this);
 }
 
 MumbleConnector::~MumbleConnector(){
@@ -36,20 +36,26 @@ MumbleConnector::~MumbleConnector(){
 	}
 }
 
-void MumbleConnector::sendTextMessage(std::string message){
+void MumbleConnector::sendTextMessage(const std::string& message){
 }
 
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){
-		std::string tmp=socket->receive();
-		if(tmp.size()>0){
-			std::string header_str=tmp.substr(0,HEADER_SIZE);
-			const MumbleHeader* netHeader = reinterpret_cast<const MumbleHeader*>(header_str.c_str());
-			const MumbleHeader header(ntohs(netHeader->getMessageType()),ntohl(netHeader->getMessageLength()));
-			std::string message=tmp.substr(HEADER_SIZE+1,header.getMessageLength());
-			dispatchMessage(header,message);
-		}else{
-				std::cout << "none" << std::endl;
+		std::stringstream tmp(socket->receive());
+		char pHeader[HEADER_SIZE];
+		std::string msg;
+
+		while(tmp.tellg()>=0){
+			tmp.read(pHeader,HEADER_SIZE);
+
+			//construct header (should be optimized by compiler?)
+			const uint16_t type=ntohs(*reinterpret_cast<uint16_t*>(pHeader));
+			const uint32_t length=ntohl(*reinterpret_cast<uint32_t*>(pHeader+2));
+			const MumbleHeader header(type,length);
+
+			msg.resize(header.getMessageLength());
+			tmp.read(&msg[0],header.getMessageLength());
+			dispatchMessage(header,msg);
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 	}
@@ -57,12 +63,16 @@ void MumbleConnector::handleReceives(){
 
 void MumbleConnector::connect(){
 	//version exchange (skippable)
-	const int versionBytes=0b00000000000000010000001000011101;//const version id, connect as current stable (13.07.17)
-	const std::string release = "1.2.29";
+	const int versionBytes=0x0102060;
+	const std::string release = "1.2.6";
+	const std::string os = "linux";
+	const std::string os_version = "cbot";
 	MumbleProto::Version myVersion;
 	std::string buffer;
 	myVersion.set_version(versionBytes);
 	myVersion.set_release(release.c_str());
+	myVersion.set_os(os.c_str());
+	myVersion.set_os_version(os_version.c_str());
 	myVersion.SerializeToString(&buffer);
 	sendProtoMessage(MumbleMessageType::Version,buffer);
 	std::cout << "connected2" << std::endl;
@@ -178,7 +188,7 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 //}}}
 
 void MumbleConnector::pingLoop(){
-	while(ping){
+	while(ping){//TODO: count ping packages and inform server about delays
 		MumbleProto::Ping pingPackage;
 		pingPackage.set_timestamp(TIME_IN_MS);
 		sendProtoMessage(MumbleMessageType::Ping,pingPackage);
