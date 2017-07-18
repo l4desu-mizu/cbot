@@ -2,7 +2,7 @@
 #include "mumble.pb.h"
 #include "Connector.h"
 #include "ManagedSSLSocket.h"
-#include "Channels.h"
+#include "Entities.h"
 #include <thread>
 #include <iostream>
 #include <mutex>
@@ -63,12 +63,12 @@ class MumbleConnector: public Connector{
 		MumbleConnector(std::string host,int port=64738); //mumble default port
 		~MumbleConnector();
 		void sendTextMessage(const std::string& message);
-		ChannelList& getChannels();
+		EntityList& getChannels();
 	private:
 		const std::string username;
 		const std::string password;
 		std::mutex channelMutex;
-		ChannelList channels;
+		EntityList channels;
 		ManagedSSLSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
 		MumbleProto::Ping pingPackage;
@@ -90,6 +90,7 @@ class MumbleConnector: public Connector{
 		void handle(const MumbleProto::Reject& rejectMsg);
 		void handle(const MumbleProto::ServerSync& syncMsg);
 		void handle(const MumbleProto::ChannelState& stateMsg);
+		void handle(const MumbleProto::ChannelRemove& channelMsg);
 		void handle(const MumbleProto::UserState& stateMsg);
 		void handle(const MumbleProto::TextMessage& textMsg);
 		void handle(const MumbleProto::PermissionDenied& deniedMsg);
@@ -104,7 +105,6 @@ class MumbleConnector: public Connector{
 
 		//these are currently ignored, therefore the implementation
 		void handle(const MumbleProto::VoiceTarget& voiceMsg);
-		void handle(const MumbleProto::ChannelRemove& channelMsg);
 		void handle(const MumbleProto::UserRemove& userRemoveMsg);
 		void handle(const MumbleProto::BanList& banMsg);
 		void handle(const MumbleProto::ACL& aclMsg);

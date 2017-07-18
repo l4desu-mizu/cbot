@@ -37,7 +37,7 @@ MumbleConnector::~MumbleConnector(){
 void MumbleConnector::sendTextMessage(const std::string& message){
 }
 
-ChannelList& MumbleConnector::getChannels(){
+EntityList& MumbleConnector::getChannels(){
 	std::lock_guard<std::mutex> lock(channelMutex);
 	return channels;
 }
@@ -156,7 +156,7 @@ void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	if(stateMsg.has_name()){
 		channelName=stateMsg.name();
 	}
-	const Channel newChannel = {channelID,channelName};
+	const Entity newChannel = {channelID,channelName,EntityType::Channel};
 	channels.add(newChannel);
 }
 void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
