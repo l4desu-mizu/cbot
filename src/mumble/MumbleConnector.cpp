@@ -99,88 +99,88 @@ void MumbleConnector::sendProtoMessage(const MumbleMessageType& msgType,const ::
 
 //{{{
 void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::string& message){
+	//easy switchcase generation, call a handle method for each Proto-Type
+#define MUMBLE_MESSAGE_TYPE(x) case MumbleMessageType:: x:{\
+		MumbleProto:: x tmp;\
+		tmp.ParseFromString(message);\
+		break;\
+	}
 	switch(header.getMessageType()){
-		case MumbleMessageType::Version:{
-			std::clog<< "version: " <<std::endl;
-			MumbleProto::Version v;
-			v.ParseFromString(message);
-			break;
-		}
-		case MumbleMessageType::Reject:{
-			 std::clog<< "Reject" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::ServerSync:{
-			 std::clog<< "ServerSync" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::ChannelState:{
-			 std::clog<< "ChannelState" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::UserState:{
-			 std::clog<< "UserState" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::TextMessage:{
-			std::clog<< "TextMessage" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::PermissionDenied:{
-			std::clog<< "PermissionDenied" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::QueryUsers:{
-			std::clog<< "QueryUsers" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::CryptSetup:{
-			std::clog<< "CryptSetup" <<std::endl;
-			udpCrypto.ParseFromString(message);
-			break;
-		}
-		case MumbleMessageType::UserList:{
-			std::clog<< "UserList" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::PermissionQuery:{
-			std::clog<< "PermissionQuery" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::CodecVersion:{
-			std::clog<< "CodecVersion" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::ServerConfig:{
-			std::clog<< "ServerConfig" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::SuggestConfig:{
-			std::clog<< "SuggestConfig" <<std::endl;
-			break;
-		}
-		case MumbleMessageType::Ping:{ /*irrelevant*/ std::clog<< "pong" <<std::endl; break; }
-		case MumbleMessageType::VoiceTarget: /*future feature?*/ std::clog<< "VoiceTarget" <<std::endl; break;
-		case MumbleMessageType::ChannelRemove: /*probably irrelevant*/ std::clog<< "ChannelRemove" <<std::endl; break;
-		case MumbleMessageType::UserRemove: /*probably irrelevant*/ std::clog<< "UserRemove" <<std::endl; break;
-		case MumbleMessageType::BanList: /*irrelevant*/ std::clog<< "BanList" <<std::endl; break;
-		case MumbleMessageType::ACL: /*irrelevant*/ std::clog<< "ACL" <<std::endl; break;
-		case MumbleMessageType::ContextActionModify: /*irrelevant*/ std::clog<< "ContextActionAdd" <<std::endl; break;
-		case MumbleMessageType::ContextAction: /*irrelevant*/ std::clog<< "ContextAction" <<std::endl; break;
-		case MumbleMessageType::UserStats: /*irrelevant*/ std::clog<< "UserStats" <<std::endl; break;
-		case MumbleMessageType::RequestBlob: /*irrelevant*/ std::clog<< "RequestBlob" <<std::endl; break;
-		case MumbleMessageType::UDPTunnel: /*unused*/ break;
-		case MumbleMessageType::Authenticate: /*should not be recieved by client*/ std::clog<< "received auth message?" <<std::endl; break;
+		MUMBLE_MESSAGE_TYPES_ALL
 		default: std::clog<< "dunno what this is" <<std::endl; break;
 	}
+#undef MUMBLE_MESSAGE_TYPE
 }
 //}}}
 
 void MumbleConnector::pingLoop(){
 	while(ping){//TODO: count ping packages and inform server about delays
-		MumbleProto::Ping pingPackage;
 		pingPackage.set_timestamp(TIME_IN_MS);
 		sendProtoMessage(MumbleMessageType::Ping,pingPackage);
 		std::this_thread::sleep_for(std::chrono::seconds(PING_TIMEOUT));
 	}
 }
+
+//message handler
+void MumbleConnector::handle(const MumbleProto::Version& version){
+	std::clog<< "version: " <<std::endl;
+	std::string output;
+	google::protobuf::TextFormat::PrintToString(version,&output);
+	std::clog<< output <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::Reject& rejectMsg){
+	std::clog<< "Reject" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::ServerSync& syncMsg){
+	std::clog<< "ServerSync" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
+	std::clog<< "ChannelState" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
+	std::clog<< "UserState" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::TextMessage& textMsg){
+	std::clog<< "TextMessage" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::PermissionDenied& deniedMsg){
+	std::clog<< "PermissionDenied" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::QueryUsers& queryMsg){
+	std::clog<< "QueryUsers" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::CryptSetup& cryptoMsg){
+	std::clog<< "CryptSetup" <<std::endl;
+	udpCrypto=cryptoMsg;
+}
+void MumbleConnector::handle(const MumbleProto::UserList& userListMsg){
+	std::clog<< "UserList" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::PermissionQuery& queryMsg){
+	std::clog<< "PermissionQuery" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::CodecVersion& codecMsg){
+	std::clog<< "CodecVersion" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::ServerConfig& configMsg){
+	std::clog<< "ServerConfig" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::SuggestConfig& configMsg){
+	std::clog<< "SuggestConfig" <<std::endl;
+}
+void MumbleConnector::handle(const MumbleProto::Ping& pong){
+	pingPackage.set_tcp_packets(pingPackage.tcp_packets()+1);
+	std::clog<< "pong" <<std::endl;
+}
+
+//	case MumbleMessageType::VoiceTarget: /*future feature?*/ std::clog<< "VoiceTarget" <<std::endl; break;
+//	case MumbleMessageType::ChannelRemove: /*probably irrelevant*/ std::clog<< "ChannelRemove" <<std::endl; break;
+//	case MumbleMessageType::UserRemove: /*probably irrelevant*/ std::clog<< "UserRemove" <<std::endl; break;
+//	case MumbleMessageType::BanList: /*irrelevant*/ std::clog<< "BanList" <<std::endl; break;
+//	case MumbleMessageType::ACL: /*irrelevant*/ std::clog<< "ACL" <<std::endl; break;
+//	case MumbleMessageType::ContextActionModify: /*irrelevant*/ std::clog<< "ContextActionAdd" <<std::endl; break;
+//	case MumbleMessageType::ContextAction: /*irrelevant*/ std::clog<< "ContextAction" <<std::endl; break;
+//	case MumbleMessageType::UserStats: /*irrelevant*/ std::clog<< "UserStats" <<std::endl; break;
+//	case MumbleMessageType::RequestBlob: /*irrelevant*/ std::clog<< "RequestBlob" <<std::endl; break;
+//	case MumbleMessageType::UDPTunnel: /*unused*/ break;
+//	case MumbleMessageType::Authenticate: /*should not be recieved by client*/ std::clog<< "received auth message?" <<std::endl; break;

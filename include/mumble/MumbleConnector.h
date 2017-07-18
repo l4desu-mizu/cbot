@@ -64,6 +64,7 @@ class MumbleConnector: public Connector{
 		const std::string password;
 		ManagedSSLSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
+		MumbleProto::Ping pingPackage;
 		bool receiveLoopRuns=false;
 		bool ping=false;
 		std::thread receiveThread;
@@ -78,15 +79,32 @@ class MumbleConnector: public Connector{
 
 		void pingLoop();
 
-		//void handle(const MumbleProto::TextMessage& textMsg);
-		//void handle(const MumbleProto::ServerSync& syncMsg);
-		//void handle(const MumbleProto::Reject& rejectMsg);
-		//void handle(const MumbleProto::ChannelState& stateMsg);
-		//void handle(const MumbleProto::UserState& stateMsg);
-		//void handle(const MumbleProto::PermissionDenied& deniedMsg);
-		//void handle(const MumbleProto::PermissionQuery& queryMsg);
-		//void handle(const MumbleProto::QueryUsers& queryMsg);
-		//void handle(const MumbleProto::CodecVersion& codecMsg);
-		//void handle(const MumbleProto::ServerConfig& configMsg);
-		//void handle(const MumbleProto::SuggestConfig& configMsg);
+		void handle(const MumbleProto::Version& version);
+		void handle(const MumbleProto::Reject& rejectMsg);
+		void handle(const MumbleProto::ServerSync& syncMsg);
+		void handle(const MumbleProto::ChannelState& stateMsg);
+		void handle(const MumbleProto::UserState& stateMsg);
+		void handle(const MumbleProto::TextMessage& textMsg);
+		void handle(const MumbleProto::PermissionDenied& deniedMsg);
+		void handle(const MumbleProto::QueryUsers& queryMsg);
+		void handle(const MumbleProto::CryptSetup& cryptoMsg);
+		void handle(const MumbleProto::UserList& userListMsg);
+		void handle(const MumbleProto::PermissionQuery& queryMsg);
+		void handle(const MumbleProto::CodecVersion& codecMsg);
+		void handle(const MumbleProto::ServerConfig& configMsg);
+		void handle(const MumbleProto::SuggestConfig& configMsg);
+		void handle(const MumbleProto::Ping& pong);
+
+		//these are currently ignored, therefore the implementation
+		void handle(const MumbleProto::VoiceTarget& voiceMsg){}
+		void handle(const MumbleProto::ChannelRemove& channelMsg){}
+		void handle(const MumbleProto::UserRemove& userRemoveMsg){}
+		void handle(const MumbleProto::BanList& banMsg){}
+		void handle(const MumbleProto::ACL& aclMsg){}
+		void handle(const MumbleProto::ContextActionModify& contextModifyMsg){}
+		void handle(const MumbleProto::ContextAction& contextMsg){}
+		void handle(const MumbleProto::UserStats& userStatMsg){}
+		void handle(const MumbleProto::RequestBlob& blobMsg){}
+		void handle(const MumbleProto::UDPTunnel& udpMsg){}
+		void handle(const MumbleProto::Authenticate& authMsg){}
 };
