@@ -39,21 +39,25 @@ void MumbleConnector::sendTextMessage(const std::string& message){
 
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){
-		std::stringstream tmp(socket->receive());
-		char pHeader[HEADER_SIZE];
-		std::string msg;
+		const std::string tmp=(socket->receive());
+		const int inlength=tmp.size();
+		if(inlength>0){
+			std::stringstream inStream(tmp);
+			char pHeader[HEADER_SIZE];
+			std::string msg;
+			while(inStream.tellg()>=0&&inStream.tellg()<inlength){
+				inStream.read(pHeader,HEADER_SIZE);
 
-		while(tmp.tellg()>=0){
-			tmp.read(pHeader,HEADER_SIZE);
+				//construct header (should be optimized by compiler?)
+				const uint16_t type=ntohs(*reinterpret_cast<uint16_t*>(pHeader));
+				const uint32_t length=ntohl(*reinterpret_cast<uint32_t*>(pHeader+2));
+				const MumbleHeader header(type,length);
 
-			//construct header (should be optimized by compiler?)
-			const uint16_t type=ntohs(*reinterpret_cast<uint16_t*>(pHeader));
-			const uint32_t length=ntohl(*reinterpret_cast<uint32_t*>(pHeader+2));
-			const MumbleHeader header(type,length);
-
-			msg.resize(header.getMessageLength());
-			tmp.read(&msg[0],header.getMessageLength());
-			std::thread(&MumbleConnector::dispatchMessage,this,header,msg).detach();
+				msg.clear();
+				msg.resize(header.getMessageLength(),'\0');
+				inStream.read(&msg[0],header.getMessageLength());
+				std::thread(&MumbleConnector::dispatchMessage,this,header,msg).detach();
+			}
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 	}
