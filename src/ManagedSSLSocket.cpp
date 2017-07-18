@@ -3,13 +3,46 @@
 #include <sstream>
 #include <iostream>
 
-ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port)
-:ManagedSSLSocket(hostname,port,"",""){}
+ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port, bool useEncrypt):
+certFile(""),
+certKeyFile(""){
+	if(useEncrypt){
+		SSL_load_error_strings();
+		ERR_load_BIO_strings();
+		OpenSSL_add_all_algorithms();
+		initSSLSocket(hostname,port);
+	}else{
+		SSL_load_error_strings();
+		ERR_load_BIO_strings();
+		bio = BIO_new_connect(createTargetHost(hostname,port).c_str());
+		if(bio==NULL){
+				//ERROR
+		}
+		//connect with handshake
+		if(BIO_do_connect(bio)<=0){
+				//ERROR
+		}
+	}
+}
 
 ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile):
 certFile(certFile),
 certKeyFile(certKeyFile){
-	initSSL();
+	initSSLSocket(hostname,port);
+}
+
+ManagedSSLSocket::~ManagedSSLSocket(){
+	if(sslContext!=NULL){
+		SSL_CTX_free(sslContext);
+		sslContext=NULL;
+	}
+	if(bio!=NULL){
+		BIO_free_all(bio);
+		bio=NULL;
+	}
+}
+
+void ManagedSSLSocket::initSSLSocket(const std::string& hostname, const int& port){
 	sslContext=SSL_CTX_new(TLS_client_method());
 	SSL_CTX_set_options(sslContext,SSL_OP_SINGLE_DH_USE);
 
@@ -51,24 +84,7 @@ certKeyFile(certKeyFile){
 	}
 }
 
-ManagedSSLSocket::~ManagedSSLSocket(){
-	if(sslContext!=NULL){
-		SSL_CTX_free(sslContext);
-		sslContext=NULL;
-	}
-	if(bio!=NULL){
-		BIO_free_all(bio);
-		bio=NULL;
-	}
-}
-
-void ManagedSSLSocket::initSSL(){
-	SSL_load_error_strings();
-	ERR_load_BIO_strings();
-	OpenSSL_add_all_algorithms();
-}
-
-std::string ManagedSSLSocket::createTargetHost(std::string host, int port){
+std::string ManagedSSLSocket::createTargetHost(const std::string& host,const int& port){
 	std::stringstream targetHost;
 	targetHost << host << ":" << port;
 	return targetHost.str();

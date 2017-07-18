@@ -5,7 +5,7 @@
 
 class ManagedSSLSocket{
 	public:
-		ManagedSSLSocket(std::string hostname, int port);
+		ManagedSSLSocket(std::string hostname, int port, bool useEncrypt=true);
 		ManagedSSLSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile);
 		~ManagedSSLSocket();
 		void disconnect();
@@ -18,6 +18,6 @@ class ManagedSSLSocket{
 		BIO* bio;
 		SSL* ssl=NULL;
 		SSL_CTX* sslContext=NULL;
-		void initSSL();
-		std::string createTargetHost(std::string host, int port);
+		void initSSLSocket(const std::string& hostname,const int& port);
+		std::string createTargetHost(const std::string& host,const int& port);
 };
