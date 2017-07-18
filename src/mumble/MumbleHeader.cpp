@@ -1,4 +1,5 @@
 #include "mumble/MumbleConnector.h"
+#include <arpa/inet.h> //ntohl,ntohs
 
 MumbleHeader::MumbleHeader(uint16_t messageType,uint32_t messageLength):messageType(messageType),messageLength(messageLength){
 }

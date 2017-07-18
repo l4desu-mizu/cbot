@@ -1,4 +1,5 @@
 #include "mumble/MumbleConnector.h"
+#include <arpa/inet.h> //ntohl,ntohs
 #include <google/protobuf/text_format.h>
 #include <iostream>
 #include <sstream>
