@@ -33,6 +33,7 @@ SET(BASE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/MumbleHeader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/ManagedSSLSocket.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Entities.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/SimpleList.hpp
 )
 
