@@ -65,7 +65,11 @@ void SimpleList<Entity>::remove(const int id){
 template <class X>
 inline
 void SimpleList<X>::remove(const int id){
-	entities.erase(entities.begin()+id);
+	auto it=entities.begin();
+	for(int i=0;i<id&&it!=entities.end();i++,it++){}
+	if(it!=entities.end()){
+		entities.erase(it);
+	}
 }
 
 template <class X>
