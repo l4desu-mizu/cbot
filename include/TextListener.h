@@ -5,8 +5,8 @@
 
 struct Text{
 	std::string message;
-	const Entity& from;
-	const Entity& to;
+	const Entity from;
+	const Entity to;
 };
 class TextListener{
 	public:
