@@ -37,10 +37,10 @@ MumbleConnector::~MumbleConnector(){
 void MumbleConnector::sendTextMessage(const std::string& message){
 }
 
-EntityList& MumbleConnector::getChannels(){
-	std::lock_guard<std::mutex> lock(channelMutex);
-	return channels;
-}
+//EntityList& MumbleConnector::getChannels(){
+//	std::lock_guard<std::mutex> lock(channelMutex);
+//	return channels;
+//}
 
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){
@@ -156,14 +156,14 @@ void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	if(stateMsg.has_name()){
 		channelName=stateMsg.name();
 	}
-	const Entity newChannel = {channelID,channelName,EntityType::Channel};
-	channels.add(newChannel);
+	//const Channel newChannel(channelID,channelName);
+	//channels.add(newChannel);
 }
 void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 	std::clog<< "ChannelRemove" <<std::endl;
 	std::lock_guard<std::mutex> lock(channelMutex);
 	if(channelMsg.has_channel_id()){
-		channels.remove(channelMsg.channel_id());
+		//channels.remove(channelMsg.channel_id());
 	}
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
