@@ -1,41 +1,37 @@
 #include "Entities.h"
 #include <algorithm>
 
+Entity::Entity(int id,std::string name, EntityType type):id(id),name(name),type(type){
+}
+//Entity::Entity(const Entity& entity):id(entity.getID()),name(entity.getName()),type(entity.getType()){
+//}
 bool Entity::operator==(const Entity& otherEntity){
-	return this->id==otherEntity.id&&this->type==otherEntity.type;
+	return this->id==otherEntity.getID()&&this->type==otherEntity.getType();
+}
+int Entity::getID() const{
+	return id;
+}
+std::string Entity::getName() const{
+	return name;
+}
+EntityType Entity::getType() const{
+	return type;
 }
 
-EntityList::EntityList(){}
-EntityList::EntityList(Entity& entity){
-	this->add(entity);
+User::User(const int id, const std::string name):Entity(id,name,EntityType::User_type){
 }
-EntityList::EntityList(std::vector<Entity>& entitys){
-	this->entitys=entitys;
+User::~User(){}
+User& User::operator=(const User& otherEntity){
+	this->id=otherEntity.getID();
+	this->name=otherEntity.getName();
+	return *this;
 }
-EntityList::~EntityList(){
-	entitys.clear();
+Channel::Channel(const int id, const std::string name):Entity(id,name,EntityType::Channel_type){
 }
-
-bool EntityList::contains(const Entity& entity){
-	const auto it=std::find(entitys.begin(), entitys.end(), entity);
-	return ( it != entitys.end());
-}
-
-void EntityList::add(Entity entity){
-	entitys.push_back(entity);
+Channel::~Channel(){}
+Channel& Channel::operator=(const Channel& otherEntity){
+	this->id=otherEntity.getID();
+	this->name=otherEntity.getName();
+	return *this;
 }
 
-void EntityList::remove(const int id){
-	for(auto it=entitys.begin();it!=entitys.end();it++){
-		if(it->id==id){
-			entitys.erase(it);
-		}
-	}
-}
-
-void EntityList::remove(const Entity& entity){
-	auto it=std::find(entitys.begin(), entitys.end(), entity);
-	if( it != entitys.end()) {
-		entitys.erase(it);
-	}
-}

@@ -1,29 +1,36 @@
 #pragma once
 #include <string>
-#include <vector>
 
 enum EntityType{
-	Channel,
-	User
+	Channel_type,
+	User_type
 };
 class Entity{
 	public:
+		//Entity(const Entity& entity);
+		virtual ~Entity(){}
+		bool operator==(const Entity& otherEntity);
+		int getID() const;
+		std::string getName() const;
+		EntityType getType() const;
+	protected:
+		Entity(const int id,const std::string name, const EntityType type);
 		int id;
 		std::string name;
-		EntityType type;
-		bool operator==(const Entity& otherEntity);
+	private:
+		const EntityType type;
 };
 
-class EntityList{
+class User:public Entity{
 	public:
-		EntityList();
-		EntityList(Entity& entity);
-		EntityList(std::vector<Entity>& entitys);
-		~EntityList();
-		bool contains(const Entity& entity);
-		void add(Entity entity);
-		void remove(const int id);
-		void remove(const Entity& entity);
-	private:
-		std::vector<Entity> entitys;
+		User(const int id, const std::string name);
+		~User();
+		User& operator=(const User& entity);
+};
+
+class Channel:public Entity{
+	public:
+		Channel(const int id, const std::string name);
+		~Channel();
+		Channel& operator=(const Channel& entity);
 };
