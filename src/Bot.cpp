@@ -57,13 +57,4 @@ void Bot::preRun(){
 }
 void Bot::run(){
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	if(me!=NULL){
-		std::lock_guard<std::mutex> lock(meLock);
-		std::cout << "Ich heisse " << me->getName();
-	}
-	if(currentChannel!=NULL){
-		std::lock_guard<std::mutex> lock(channelLock);
-		std::cout << " und bin im Channel " << currentChannel->getName();
-	}
-	std::cout << std::endl;
 }
