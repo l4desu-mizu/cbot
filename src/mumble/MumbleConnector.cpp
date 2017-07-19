@@ -187,6 +187,12 @@ void MumbleConnector::pingLoop(){
 	}
 }
 
+void MumbleConnector::notifyListeners(const Text& text){
+	std::lock_guard<std::mutex> lock(textListenerMutex);
+	for(TextListener* l:textListeners){
+		l->notify(text);
+	}
+}
 void MumbleConnector::notifyListeners(const Entity& ent){
 	if(ent.getType()==EntityType::Channel_type){
 		std::lock_guard<std::mutex> lock(channelListenerMutex);
@@ -279,6 +285,14 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 }
 void MumbleConnector::handle(const MumbleProto::TextMessage& textMsg){
 	std::clog<< "TextMessage" <<std::endl;
+	int fromID;
+	if(!textMsg.has_actor()||textMsg.actor()==sessionID){//murmur does not send own messages to channels back, yet security
+		return;
+	}else{
+		fromID=textMsg.actor();
+	}
+	Text text={textMsg.message(),User(fromID,""),User(sessionID,username)};
+	notifyListeners(text);
 }
 void MumbleConnector::handle(const MumbleProto::PermissionDenied& deniedMsg){
 	std::clog<< "PermissionDenied" <<std::endl;

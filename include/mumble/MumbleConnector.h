@@ -2,6 +2,7 @@
 #include "mumble.pb.h"
 #include "Connector.h"
 #include "ManagedSSLSocket.h"
+#include "TextListener.h"
 #include "EntityListener.h"
 #include <thread>
 #include <iostream>
@@ -100,6 +101,7 @@ class MumbleConnector: public Connector{
 
 		void pingLoop();
 
+		void notifyListeners(const Text& text);
 		void notifyListeners(const Entity& ent);
 		void unnotifyListeners(const int id, const EntityType type);
 
