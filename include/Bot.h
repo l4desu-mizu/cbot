@@ -6,6 +6,7 @@
 #include "IBot.h"
 #include <string>
 #include <mutex>
+#include <queue>
 
 class Bot: public TextListener,EntityListener, IBot{
 	public:
@@ -20,10 +21,12 @@ class Bot: public TextListener,EntityListener, IBot{
 		Connector* connection;
 		SimpleList<Channel> channels;
 		SimpleList<User> users;
+		std::mutex textingMutex;
+		std::queue<Text> receivedTexts;
 		std::string myName;
 		std::mutex meLock;
 		std::mutex channelLock;
 		User* me=NULL;
 		Channel* currentChannel=NULL;
-		virtual void respond(const Text& text)=0;
+		virtual bool respond(const Text& text)=0;
 };

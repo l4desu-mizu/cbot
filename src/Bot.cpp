@@ -10,9 +10,8 @@ Bot::Bot(Connector* connection):connection(connection){
 Bot::~Bot(){
 }
 void Bot::notify(const Text& text){
-	if(text.to==*me||text.to==*currentChannel){
-		respond(text);
-	}
+	std::lock_guard<std::mutex> lock(textingMutex);
+	receivedTexts.push(text);
 }
 void Bot::notify(const Entity& e){
 	if(e.getType()==EntityType::Channel_type){
@@ -56,4 +55,11 @@ void Bot::preRun(){
 }
 void Bot::run(){
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	if(receivedTexts.size()>0){
+		std::lock_guard<std::mutex> lock(textingMutex);
+		if(respond(receivedTexts.front())){
+			receivedTexts.pop();
+		}
+	}
+	std::cout << "messages " << receivedTexts.size() << std::endl;
 }
