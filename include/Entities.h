@@ -13,6 +13,7 @@ class Entity{
 		int getID() const;
 		std::string getName() const;
 		EntityType getType() const;
+		bool getConcern() const;
 	protected:
 		Entity(const int id,const std::string name, const EntityType type, bool myConcern);
 		int id;
@@ -25,16 +26,18 @@ class Entity{
 class User:public Entity{
 	public:
 		User(const int id, const std::string name, bool me=false);
+		User(const Entity& entity);
 		~User();
-		User& operator=(const User& entity);
+		User& operator=(const Entity& entity);
 		bool isMe();
 };
 
 class Channel:public Entity{
 	public:
 		Channel(const int id, const std::string name, bool here=false);
+		Channel(const Entity& entity);
 		~Channel();
-		Channel& operator=(const Channel& entity);
+		Channel& operator=(const Entity& entity);
 		bool imHere();
-		//TODO list of users
+		//TODO list of users?
 };

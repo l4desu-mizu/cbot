@@ -15,11 +15,16 @@ std::string Entity::getName() const{
 EntityType Entity::getType() const{
 	return type;
 }
+bool Entity::getConcern() const{
+	return myConcern;
+}
 
 User::User(const int id, const std::string name, bool me):Entity(id,name,EntityType::User_type,me){
 }
+User::User(const Entity& entity):User(entity.getID(),entity.getName(),entity.getConcern()){
+}
 User::~User(){}
-User& User::operator=(const User& otherEntity){
+User& User::operator=(const Entity& otherEntity){
 	this->id=otherEntity.getID();
 	this->name=otherEntity.getName();
 	return *this;
@@ -29,8 +34,10 @@ bool User::isMe(){
 }
 Channel::Channel(const int id, const std::string name, bool here):Entity(id,name,EntityType::Channel_type,here){
 }
+Channel::Channel(const Entity& entity):Channel(entity.getID(),entity.getName(),entity.getConcern()){
+}
 Channel::~Channel(){}
-Channel& Channel::operator=(const Channel& otherEntity){
+Channel& Channel::operator=(const Entity& otherEntity){
 	this->id=otherEntity.getID();
 	this->name=otherEntity.getName();
 	return *this;
