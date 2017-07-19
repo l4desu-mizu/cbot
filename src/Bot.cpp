@@ -1,9 +1,18 @@
 #include "Bot.h"
+#include <thread>
+#include <iostream>
 
 Bot::Bot(Connector* connection):connection(connection){
+	connection->addChannelListener(this);
+	connection->addUserListener(this);
 	connection->connect();
 }
 Bot::~Bot(){
+}
+void Bot::notify(const Text& text){
+	if(text.to==*me||text.to==*currentChannel){
+		respond(text);
+	}
 }
 void Bot::notify(const Entity& e){
 	if(e.getType()==EntityType::Channel_type){
@@ -28,4 +37,12 @@ void Bot::unnotify(const Entity& e){
 	}
 }
 void Bot::run(){
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	if(me!=NULL){
+		std::cout << "Ich heisse " << me->getName();
+	}
+	if(currentChannel!=NULL){
+		std::cout << " und bin im Channel " << currentChannel->getName();
+	}
+	std::cout << std::endl;
 }
