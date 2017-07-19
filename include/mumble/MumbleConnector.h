@@ -60,7 +60,6 @@ enum MumbleMessageType{//Maybe macros?
 
 class MumbleConnector: public Connector{
 	public:
-		MumbleConnector(const std::string host,const int port=64738); //mumble default port
 		MumbleConnector(ManagedSSLSocket* socket, const std::string username, const std::string password="");
 		~MumbleConnector();
 		void connect();

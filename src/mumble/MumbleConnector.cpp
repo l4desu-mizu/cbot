@@ -13,9 +13,6 @@ socket(socket),
 username(username),
 password(password){
 }
-MumbleConnector::MumbleConnector(const std::string host,const int port):username("Test"),password(""){
-	socket=new ManagedSSLSocket(host,port);//presumably done...
-}
 
 MumbleConnector::~MumbleConnector(){
 	std::clog << "connector ends" << std::endl;
@@ -23,10 +20,6 @@ MumbleConnector::~MumbleConnector(){
 	receiveThread.join();
 	ping=false;
 	pingThread.join();
-	if(socket!=NULL){
-		delete socket;
-		socket=NULL;
-	}
 }
 
 void MumbleConnector::connect(){
