@@ -23,7 +23,6 @@ MumbleConnector::~MumbleConnector(){
 }
 
 void MumbleConnector::connect(){
-	firstUserState=true;
 	receiveLoopRuns=true;
 	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
 	std::clog << "connecting to Mumble" << std::endl;
@@ -204,11 +203,6 @@ void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 	std::clog<< "UserState" <<std::endl;
-	//first UserState this Connector gets should be the sessionID of the Connectors User
-	if(firstUserState&&stateMsg.has_session()){
-		sessionID=stateMsg.session();
-		firstUserState=false;
-	}
 	//get the id of the channel this connector is currently connected to
 	if(stateMsg.has_channel_id()&&stateMsg.has_session()&&stateMsg.session()==sessionID){
 		channelID=stateMsg.channel_id();
@@ -217,10 +211,13 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 	}
 	//update users
 	if(stateMsg.has_session()){
-		int userID=stateMsg.session();
+		const int userID=stateMsg.session();
 		std::string name="";
 		if(stateMsg.has_name()){
 			name=stateMsg.name();
+			if(name==username){
+				sessionID=userID;//TODO check for registered user_id so a name change can be observerd
+			}
 		}
 		const User newUser(userID,name,sessionID==userID);
 		notifyListeners(newUser);
