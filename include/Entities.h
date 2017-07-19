@@ -29,18 +29,18 @@ class Entity{
 class User:public Entity{
 	public:
 		User(const int id, const std::string name, bool me=false);
-		User(const Entity entity);
+		User(const Entity& entity);
 		~User();
-		User& operator=(const Entity entity);
+		User& operator=(const Entity& entity);
 		bool isMe();
 };
 
 class Channel:public Entity{
 	public:
 		Channel(const int id, const std::string name, bool here=false);
-		Channel(const Entity entity);
+		Channel(const Entity& entity);
 		~Channel();
-		Channel& operator=(const Entity entity);
+		Channel& operator=(const Entity& entity);
 		bool imHere();
 		//TODO list of users?
 };
