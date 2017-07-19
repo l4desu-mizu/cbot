@@ -58,8 +58,8 @@ void MumbleConnector::sendTextMessage(const std::string& message){
 void MumbleConnector::whisperTextMessage(const std::vector<User>& users,const std::string& message){
 	MumbleProto::TextMessage text;
 	text.set_actor(sessionID);
-	for(const User& c:users){
-		text.add_session(channelID);
+	for(const User& user:users){
+		text.add_session(user.getID());
 	}
 	text.set_message(message);
 	sendProtoMessage(MumbleMessageType::TextMessage, text);
