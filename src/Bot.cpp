@@ -49,6 +49,11 @@ void Bot::preRun(){
 			break;
 		}
 	}
+	const std::string greetings="Greetings!";
+	std::vector<User> use=users.getCurrent();
+	const std::string friends="How are you??";
+	connection->whisperTextMessage(use,friends);
+	connection->whisperTextMessage(chan,greetings);
 }
 void Bot::run(){
 	std::this_thread::sleep_for(std::chrono::seconds(1));
