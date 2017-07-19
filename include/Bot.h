@@ -14,6 +14,7 @@ class Bot: public TextListener,EntityListener, IBot{
 		void notify(const Text& text);
 		void notify(const Entity& e);
 		void unnotify(const Entity& e);
+		void preRun();
 		void run();
 	protected:
 		Connector* connection;

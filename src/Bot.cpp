@@ -38,6 +38,8 @@ void Bot::unnotify(const Entity& e){
 		users.remove(e.getID());
 	}
 }
+void Bot::preRun(){
+}
 void Bot::run(){
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	if(me!=NULL){
