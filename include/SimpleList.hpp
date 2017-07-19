@@ -1,6 +1,7 @@
 #pragma once
 #include "Entities.h"
 #include <list>
+#include <algorithm>
 
 template <class X>
 class SimpleList{
