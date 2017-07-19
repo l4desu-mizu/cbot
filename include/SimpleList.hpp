@@ -62,7 +62,7 @@ void SimpleList<X>::add(X entity){
 	if(it != entities.end()){
 		it->setID(entity.getID());
 		it->setConcern(entity.getConcern());
-		if(it->getName().size()>0){//only update name if there is actually one
+		if(entity.getName().size()>0){//only update name if there is actually one
 			it->setName(entity.getName());
 		}
 	}else{//does not contain the element
