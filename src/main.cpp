@@ -1,6 +1,6 @@
 #include "ManagedSSLSocket.h"
 #include "Connector.h"
-#include "SimpleBot.h"
+#include "SimpleMumbleBot.h"
 #include "mumble/MumbleConnector.h"
 #include <string>
 #include <iostream>
@@ -13,7 +13,7 @@ int main(){
 	std::cout << "creating connector" << std::endl;
 	ManagedSSLSocket mySocket(s,MUMBLE_DEFAULT_PORT);
 	Connector* c = new MumbleConnector(&mySocket,NAME);
-	SimpleBot b(c);
+	SimpleMumbleBot b(c);
 	b.preRun();
 	std::cout << "done" << std::endl;
 	while(1){

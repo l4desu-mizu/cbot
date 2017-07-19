@@ -1,11 +1,11 @@
-#include "SimpleBot.h"
+#include "SimpleMumbleBot.h"
 #include <iostream>
 
-SimpleBot::SimpleBot(Connector* connection):Bot(connection){
+SimpleMumbleBot::SimpleMumbleBot(Connector* connection):Bot(connection){
 }
-SimpleBot::~SimpleBot(){
+SimpleMumbleBot::~SimpleMumbleBot(){
 }
-void SimpleBot::preRun(){
+void SimpleMumbleBot::preRun(){
 	Bot::preRun();
 	const std::string channel="SomeChannel";
 	std::cout << "moving to " << channel << std::endl;
@@ -22,6 +22,6 @@ void SimpleBot::preRun(){
 	connection->whisperTextMessage(chan,greetings);
 	connection->whisperTextMessage(use,friends);
 }
-bool SimpleBot::respond(const Text& text){
+bool SimpleMumbleBot::respond(const Text& text){
 	return true;
 }

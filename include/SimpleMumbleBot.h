@@ -2,10 +2,10 @@
 
 #include "Bot.h"
 
-class SimpleBot:public Bot{
+class SimpleMumbleBot:public Bot{
 	public:
-		SimpleBot(Connector* connection);
-		~SimpleBot();
+		SimpleMumbleBot(Connector* connection);
+		~SimpleMumbleBot();
 		void preRun();
 	protected:
 		bool respond(const Text& text);
