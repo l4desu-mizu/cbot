@@ -6,6 +6,12 @@ Entity::Entity(const int id,const std::string name,const  EntityType type, const
 bool Entity::operator==(const Entity& otherEntity) const{
 	return this->id==otherEntity.getID()&&this->type==otherEntity.getType();
 }
+Entity& Entity::operator=(const Entity& entity){
+	this->id=entity.getID();
+	this->name=entity.getName();
+	this->myConcern=entity.getConcern();
+	return *this;
+}
 void Entity::setID(const int newID){
 	this->id=newID;
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "Entities.h"
-#include <list>
+#include <vector>
 #include <algorithm>
 #include <mutex>
 
@@ -9,7 +9,7 @@ class SimpleList{
 	public:
 		SimpleList();
 		SimpleList(X& entity);
-		SimpleList(std::list<X>& entities);
+		SimpleList(std::vector<X>& entities);
 		~SimpleList();
 		bool contains(const X& entity);
 		void add(X entity);
@@ -17,10 +17,10 @@ class SimpleList{
 		X* getAllocated(const int id);
 		void remove(const int id);
 		void remove(const X& entity);
-		std::list<X> getCurrent();
+		std::vector<X> getCurrent();
 	private:
 		std::mutex listMutex;
-		std::list<X> entities;
+		std::vector<X> entities;
 };
 
 template <class X>
@@ -35,7 +35,7 @@ SimpleList<X>::SimpleList(X& entity){
 
 template <class X>
 inline
-SimpleList<X>::SimpleList(std::list<X>& entities){
+SimpleList<X>::SimpleList(std::vector<X>& entities){
 	this->entities=entities;
 }
 
@@ -140,6 +140,6 @@ void SimpleList<X>::remove(const X& entity){
 
 template <class X>
 inline
-std::list<X> SimpleList<X>::getCurrent(){
+std::vector<X> SimpleList<X>::getCurrent(){
 	return entities;
 }
