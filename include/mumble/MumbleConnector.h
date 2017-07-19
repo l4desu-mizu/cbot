@@ -72,6 +72,7 @@ class MumbleConnector: public Connector{
 	private:
 		const std::string username;
 		const std::string password;
+		bool serverSyncd=false;
 		int channelID=-1;
 		int sessionID=-1;//TODO: the connector (sadly) needs to keep track of the users and channels
 		std::mutex channelListenerMutex;
@@ -88,7 +89,6 @@ class MumbleConnector: public Connector{
 		void handleReceives();
 		void connection();
 		void auth();
-		void disconnect();
 		void sendProtoMessage(const MumbleMessageType& msgType,const std::string& message);
 		void sendProtoMessage(const MumbleMessageType& msgType,const ::google::protobuf::Message& message);
 		void dispatchMessage(const MumbleHeader& header, const std::string& message);

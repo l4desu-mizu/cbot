@@ -7,6 +7,7 @@
 
 #define TIME_IN_MS std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count()
 #define PING_TIMEOUT 20 //max 30
+#define MAX_WAIT 15
 
 MumbleConnector::MumbleConnector(ManagedSSLSocket* socket, const std::string username, const std::string password):
 socket(socket),
@@ -23,6 +24,7 @@ MumbleConnector::~MumbleConnector(){
 }
 
 void MumbleConnector::connect(){
+	serverSyncd=false;
 	receiveLoopRuns=true;
 	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
 	std::clog << "connecting to Mumble" << std::endl;
@@ -30,12 +32,22 @@ void MumbleConnector::connect(){
 	auth();
 	ping=true;
 	pingThread=std::thread(&MumbleConnector::pingLoop,this);
+	for(int i=0;i<MAX_WAIT;i++){
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		if(serverSyncd){
+			return;
+		}
+	}
+	throw std::runtime_error("Connection could not be poperly established. Connection Timed out.");
 }
 
 void MumbleConnector::updateUserInfo(const User& user){
 	MumbleProto::UserState users;
 	users.set_session(user.getID());
 	sendProtoMessage(MumbleMessageType::UserState, users);
+}
+
+void MumbleConnector::sendTextMessage(const std::string& message){
 }
 
 void MumbleConnector::moveToTextChat(const Entity& channel){
@@ -45,8 +57,6 @@ void MumbleConnector::moveToTextChat(const Entity& channel){
 	sendProtoMessage(MumbleMessageType::UserState, stateChange);
 }
 
-void MumbleConnector::sendTextMessage(const std::string& message){
-}
 
 void MumbleConnector::addChannelListener(EntityListener* l){
 	std::lock_guard<std::mutex> lock(channelListenerMutex);
@@ -188,6 +198,7 @@ void MumbleConnector::handle(const MumbleProto::Reject& rejectMsg){
 }
 void MumbleConnector::handle(const MumbleProto::ServerSync& syncMsg){
 	std::clog<< "ServerSync" <<std::endl;
+	serverSyncd=true;
 }
 void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	std::clog<< "ChannelState" <<std::endl;
