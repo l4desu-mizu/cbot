@@ -36,6 +36,16 @@ void MumbleConnector::connect(){
 void MumbleConnector::sendTextMessage(const std::string& message){
 }
 
+void MumbleConnector::addChannelListener(EntityListener* l){
+	std::lock_guard<std::mutex> lock(channelListenerMutex);
+	channelListeners.push_back(l);
+}
+
+void MumbleConnector::addUserListener(EntityListener* l){
+	std::lock_guard<std::mutex> lock(userListenerMutex);
+	userListeners.push_back(l);
+}
+
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){
 		const std::string tmp=(socket->receive());
@@ -128,28 +138,28 @@ void MumbleConnector::pingLoop(){
 void MumbleConnector::notifyListeners(const Entity& ent){
 	if(ent.getType()==EntityType::Channel_type){
 		std::lock_guard<std::mutex> lock(channelListenerMutex);
-		for(EntityListener& l:channelListeners){
-			l.notify(ent);
+		for(EntityListener* l:channelListeners){
+			l->notify(ent);
 		}
 	}else if(ent.getType()==EntityType::User_type){
 		std::lock_guard<std::mutex> lock(userListenerMutex);
-		for(EntityListener& l:userListeners){
-			l.notify(ent);
+		for(EntityListener* l:userListeners){
+			l->notify(ent);
 		}
 	}
 }
 void MumbleConnector::unnotifyListeners(const int id, const EntityType type){
 	if(type==EntityType::Channel_type){
 		std::lock_guard<std::mutex> lock(channelListenerMutex);
-		for(EntityListener& l:channelListeners){
+		for(EntityListener* l:channelListeners){
 			const Channel c(id,"");
-			l.unnotify(c);
+			l->unnotify(c);
 		}
 	}else if(type==EntityType::User_type){
 		std::lock_guard<std::mutex> lock(userListenerMutex);
-		for(EntityListener& l:userListeners){
+		for(EntityListener* l:userListeners){
 			const User u(id,"");
-			l.unnotify(u);
+			l->unnotify(u);
 		}
 	}
 }

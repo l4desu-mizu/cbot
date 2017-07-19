@@ -64,8 +64,8 @@ class MumbleConnector: public Connector{
 		~MumbleConnector();
 		void connect();
 		void sendTextMessage(const std::string& message);
-		void addChannelListener(const EntityListener& l);
-		void addUserListener(const EntityListener& l);
+		void addChannelListener(EntityListener* l);
+		void addUserListener(EntityListener* l);
 	private:
 		const std::string username;
 		const std::string password;
@@ -73,9 +73,9 @@ class MumbleConnector: public Connector{
 		int sessionID=-1;
 		bool firstUserState;
 		std::mutex channelListenerMutex;
-		std::vector<EntityListener> channelListeners;
+		std::vector<EntityListener*> channelListeners;
 		std::mutex userListenerMutex;
-		std::vector<EntityListener> userListeners;
+		std::vector<EntityListener*> userListeners;
 		ManagedSSLSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
 		MumbleProto::Ping pingPackage;
