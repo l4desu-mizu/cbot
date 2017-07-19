@@ -2,9 +2,12 @@
 #include <thread>
 #include <iostream>
 
+#define FLOOD_WARNING 8
+
 Bot::Bot(Connector* connection):connection(connection){
 	connection->addChannelListener(this);
 	connection->addUserListener(this);
+	connection->addTextListener(this);
 	connection->connect();
 }
 Bot::~Bot(){
@@ -55,11 +58,19 @@ void Bot::preRun(){
 }
 void Bot::run(){
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	if(receivedTexts.size()>0){
+	if(lastTextQueueSize+FLOOD_WARNING<receivedTexts.size()){
+		lastTextQueueSize=0;
+		clearQueue();
+		connection->sendTextMessage("stop Spaming!");
+	}
+	if((lastTextQueueSize=receivedTexts.size())>0){
 		std::lock_guard<std::mutex> lock(textingMutex);
 		if(respond(receivedTexts.front())){
 			receivedTexts.pop();
 		}
 	}
-	std::cout << "messages " << receivedTexts.size() << std::endl;
+}
+void Bot::clearQueue(){
+	std::queue<Text> empty;
+	std::swap(receivedTexts,empty);
 }

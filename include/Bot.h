@@ -23,10 +23,13 @@ class Bot: public TextListener,EntityListener, IBot{
 		SimpleList<User> users;
 		std::mutex textingMutex;
 		std::queue<Text> receivedTexts;
+		int lastTextQueueSize=0;
 		std::string myName;
 		std::mutex meLock;
 		std::mutex channelLock;
 		User* me=NULL;
 		Channel* currentChannel=NULL;
 		virtual bool respond(const Text& text)=0;
+	private:
+		void clearQueue();
 };
