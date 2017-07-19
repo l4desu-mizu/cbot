@@ -10,6 +10,9 @@ class Entity{
 		//Entity(const Entity& entity);
 		virtual ~Entity(){}
 		bool operator==(const Entity& otherEntity) const;
+		void setID(const int newID);
+		void setName(const std::string newName);
+		void setConcern(const bool concern);
 		int getID() const;
 		std::string getName() const;
 		EntityType getType() const;
