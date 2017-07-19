@@ -246,7 +246,8 @@ void MumbleConnector::handle(const MumbleProto::VoiceTarget& voiceMsg){
 	/*future feature?*/ std::clog<< "VoiceTarget" <<std::endl;
 }
 void MumbleConnector::handle(const MumbleProto::UserRemove& userRemoveMsg){
-	/*probably irrelevant*/ std::clog<< "UserRemove" <<std::endl;
+	std::clog<< "UserRemove" <<std::endl;
+	unnotifyListeners(userRemoveMsg.session(),EntityType::User_type);
 }
 void MumbleConnector::handle(const MumbleProto::BanList& banMsg){
 	/*irrelevant*/ std::clog<< "BanList" <<std::endl;
