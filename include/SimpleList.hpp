@@ -17,6 +17,7 @@ class SimpleList{
 		X* get_allocated(const int id);
 		void remove(const int id);
 		void remove(const X& entity);
+		std::list<X> getCurrent();
 	private:
 		std::mutex listMutex;
 		std::list<X> entities;
@@ -135,4 +136,10 @@ void SimpleList<X>::remove(const X& entity){
 	if( it != entities.end()) {
 		entities.erase(it);
 	}
+}
+
+template <class X>
+inline
+std::list<X> SimpleList<X>::getCurrent(){
+	return entities;
 }
