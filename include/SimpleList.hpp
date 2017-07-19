@@ -54,7 +54,18 @@ template <class X>
 inline
 void SimpleList<X>::add(X entity){
 	std::lock_guard<std::mutex> lock(listMutex);
-	entities.push_back(entity);
+
+	//contains this element already?
+	const auto it=std::find(entities.begin(), entities.end(), entity);
+	if(it != entities.end()){
+		it->setID(entity.getID());
+		it->setConcern(entity.getConcern());
+		if(it->getName().size()>0){//only update name if there is actually one
+			it->setName(entity.getName());
+		}
+	}else{//does not contain the element
+		entities.push_back(entity);
+	}
 }
 
 template <>
