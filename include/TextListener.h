@@ -1,13 +1,9 @@
 #pragma once
 
 #include "Entities.h"
+#include "Text.h"
 #include <string>
 
-struct Text{
-	std::string message;
-	const Entity from;
-	const Entity to;
-};
 class TextListener{
 	public:
 		virtual ~TextListener(){}
