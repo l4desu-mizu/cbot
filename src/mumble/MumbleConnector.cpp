@@ -12,6 +12,7 @@ MumbleConnector::MumbleConnector(std::string host,int port):username("Test"),pas
 	//open socket
 	//handshake
 	//socket=new ManagedSSLSocket(host,port,"./cert/mumble_bot.cert","./cert/mumble_bot_cert.key");//presumably done...
+	firstUserState=true;
 	socket=new ManagedSSLSocket(host,port);//presumably done...
 	receiveLoopRuns=true;
 	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
@@ -36,11 +37,6 @@ MumbleConnector::~MumbleConnector(){
 
 void MumbleConnector::sendTextMessage(const std::string& message){
 }
-
-//EntityList& MumbleConnector::getChannels(){
-//	std::lock_guard<std::mutex> lock(channelMutex);
-//	return channels;
-//}
 
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){
@@ -131,6 +127,33 @@ void MumbleConnector::pingLoop(){
 	}
 }
 
+void MumbleConnector::notifyListeners(const Entity& ent){
+	if(ent.getType()==EntityType::Channel_type){
+		std::lock_guard<std::mutex> lock(channelListenerMutex);
+		for(EntityListener& l:channelListeners){
+			l.notify(ent);
+		}
+	}else if(ent.getType()==EntityType::User_type){
+		std::lock_guard<std::mutex> lock(userListenerMutex);
+		for(EntityListener& l:userListeners){
+			l.notify(ent);
+		}
+	}
+}
+void MumbleConnector::unnotifyListeners(const int id, const EntityType type){
+	if(type==EntityType::Channel_type){
+		std::lock_guard<std::mutex> lock(channelListenerMutex);
+		for(EntityListener& l:channelListeners){
+			l.unnotify(id);
+		}
+	}else if(type==EntityType::User_type){
+		std::lock_guard<std::mutex> lock(userListenerMutex);
+		for(EntityListener& l:userListeners){
+			l.unnotify(id);
+		}
+	}
+}
+
 //message handler
 void MumbleConnector::handle(const MumbleProto::Version& version){
 	std::clog<< "version: " <<std::endl;
@@ -155,23 +178,35 @@ void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	if(stateMsg.has_name()){
 		channelName=stateMsg.name();
 	}
-	const Channel newChannel(channelID,channelName);
-	std::lock_guard<std::mutex> lock(channelListenerMutex);
-	for(EntityListener& l:channelListeners){
-		l.notify(newChannel);
-	}
+	const Channel newChannel(channelID,channelName,channelID==this->channelID);
+	notifyListeners(newChannel);
 }
 void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 	std::clog<< "ChannelRemove" <<std::endl;
 	if(channelMsg.has_channel_id()){
-		std::lock_guard<std::mutex> lock(channelListenerMutex);
-		for(EntityListener& l:channelListeners){
-			l.unnotify(channelMsg.channel_id());
-		}
+		unnotifyListeners(channelMsg.channel_id(),EntityType::Channel_type);
 	}
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 	std::clog<< "UserState" <<std::endl;
+	if(firstUserState&&stateMsg.has_session()){
+		sessionID=stateMsg.session();
+		firstUserState=false;
+	}
+	if(stateMsg.has_channel_id()&&stateMsg.has_session()&&stateMsg.session()==sessionID){
+		channelID=stateMsg.channel_id();
+		const Channel newChannel(channelID,"",true);
+		notifyListeners(newChannel);
+	}
+	if(stateMsg.has_session()){
+		int userID=stateMsg.session();
+		std::string name="";
+		if(stateMsg.has_name()){
+			name=stateMsg.name();
+		}
+		const User newUser(userID,name,sessionID==userID);
+		notifyListeners(newUser);
+	}
 }
 void MumbleConnector::handle(const MumbleProto::TextMessage& textMsg){
 	std::clog<< "TextMessage" <<std::endl;

@@ -68,6 +68,9 @@ class MumbleConnector: public Connector{
 	private:
 		const std::string username;
 		const std::string password;
+		int channelID=-1;
+		int sessionID=-1;
+		bool firstUserState;
 		std::mutex channelListenerMutex;
 		std::vector<EntityListener> channelListeners;
 		std::mutex userListenerMutex;
@@ -88,6 +91,9 @@ class MumbleConnector: public Connector{
 		void dispatchMessage(const MumbleHeader& header, const std::string& message);
 
 		void pingLoop();
+
+		void notifyListeners(const Entity& ent);
+		void unnotifyListeners(const int id, const EntityType type);
 
 		void handle(const MumbleProto::Version& version);
 		void handle(const MumbleProto::Reject& rejectMsg);
