@@ -48,6 +48,11 @@ void MumbleConnector::updateUserInfo(const User& user){
 }
 
 void MumbleConnector::sendTextMessage(const std::string& message){
+	MumbleProto::TextMessage text;
+	text.set_actor(sessionID);
+	text.add_channel_id(channelID);
+	text.set_message(message);
+	sendProtoMessage(MumbleMessageType::TextMessage, text);
 }
 
 void MumbleConnector::moveToTextChat(const Entity& channel){
