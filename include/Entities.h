@@ -14,23 +14,26 @@ class Entity{
 		std::string getName() const;
 		EntityType getType() const;
 	protected:
-		Entity(const int id,const std::string name, const EntityType type);
+		Entity(const int id,const std::string name, const EntityType type, const bool myConcern);
 		int id;
 		std::string name;
+		const bool myConcern;
 	private:
 		const EntityType type;
 };
 
 class User:public Entity{
 	public:
-		User(const int id, const std::string name);
+		User(const int id, const std::string name, const bool me=false);
 		~User();
 		User& operator=(const User& entity);
+		bool isMe();
 };
 
 class Channel:public Entity{
 	public:
-		Channel(const int id, const std::string name);
+		Channel(const int id, const std::string name, const bool here=false);
 		~Channel();
 		Channel& operator=(const Channel& entity);
+		bool imHere();
 };
