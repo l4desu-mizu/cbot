@@ -17,4 +17,6 @@ class Bot: public EntityListener, IBot{
 		SimpleList<Channel> channels;
 		SimpleList<User> users;
 		std::string myName;
+		User* me;
+		Channel* currentChannel;
 };

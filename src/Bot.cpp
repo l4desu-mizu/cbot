@@ -9,9 +9,15 @@ void Bot::notify(const Entity& e){
 	if(e.getType()==EntityType::Channel_type){
 		Channel c=e;
 		channels.add(c);
+		if(c.imHere()){
+			currentChannel=&c;
+		}
 	}else if(e.getType()==EntityType::User_type){
 		User u=e;
 		users.add(u);
+		if(u.isMe()){
+			me=&u;
+		}
 	}
 }
 void Bot::unnotify(const Entity& e){
