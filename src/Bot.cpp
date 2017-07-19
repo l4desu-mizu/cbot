@@ -1,6 +1,7 @@
 #include "Bot.h"
 #include <thread>
 #include <iostream>
+#include <algorithm>
 
 Bot::Bot(Connector* connection):connection(connection){
 	connection->addChannelListener(this);
@@ -39,6 +40,15 @@ void Bot::unnotify(const Entity& e){
 	}
 }
 void Bot::preRun(){
+	const std::string channel="SomeChannel";
+	std::cout << "moving to " << channel << std::endl;
+	std::list<Channel> chan=channels.getCurrent();
+	for(auto it=chan.begin();it!=chan.end();it++){
+		if(it->getName()==channel){//currently hardcoded, setup via configs?
+			connection->moveToTextChat(*it);
+			break;
+		}
+	}
 }
 void Bot::run(){
 	std::this_thread::sleep_for(std::chrono::seconds(1));
