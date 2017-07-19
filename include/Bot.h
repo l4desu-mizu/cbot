@@ -10,7 +10,7 @@ class Bot: public EntityListener, IBot{
 		Bot(Connector* connection);
 		~Bot();
 		void notify(const Entity& e);
-		void unnotify(const int id);
+		void unnotify(const Entity& e);
 		void run();
 	private:
 		Connector* connection;
