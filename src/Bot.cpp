@@ -20,14 +20,14 @@ void Bot::notify(const Entity& e){
 		channels.add(c);
 		if(c.imHere()){
 			std::lock_guard<std::mutex> lock(channelLock);
-			currentChannel=channels.get_allocated(c);
+			currentChannel=channels.getAllocated(c);
 		}
 	}else if(e.getType()==EntityType::User_type){
 		User u=e;
 		users.add(u);
 		if(u.isMe()){
 			std::lock_guard<std::mutex> lock(meLock);
-			me=users.get_allocated(u);
+			me=users.getAllocated(u);
 		}
 	}
 }
