@@ -9,7 +9,7 @@ class Entity{
 	public:
 		//Entity(const Entity& entity);
 		virtual ~Entity(){}
-		bool operator==(const Entity& otherEntity);
+		bool operator==(const Entity& otherEntity) const;
 		int getID() const;
 		std::string getName() const;
 		EntityType getType() const;

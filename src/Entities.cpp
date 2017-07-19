@@ -3,7 +3,7 @@
 
 Entity::Entity(int id,std::string name, EntityType type, const bool myConcern):id(id),name(name),type(type),myConcern(myConcern){
 }
-bool Entity::operator==(const Entity& otherEntity){
+bool Entity::operator==(const Entity& otherEntity) const{
 	return this->id==otherEntity.getID()&&this->type==otherEntity.getType();
 }
 int Entity::getID() const{
