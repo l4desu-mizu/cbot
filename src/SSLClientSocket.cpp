@@ -76,6 +76,7 @@ void SSLClientSocket::initSSLSocket(const std::string& hostname, const int& port
 		//ERROR
 		/* Handle failed connection */
 		std::clog << "do connect failed" << std::endl;
+		throw std::runtime_error("Target not reachable");
 	}
 	if(SSL_get_verify_result(ssl) != X509_V_OK){
 		//SSL verification
@@ -107,6 +108,7 @@ int SSLClientSocket::send(const char* message,const int length){
 		if(! BIO_should_retry(bio)){
 			//Handle failed write
 			std::clog << "final writing failed" << std::endl;
+			throw std::runtime_error("Socket dead.");
 		}
 	}
 	return res;
@@ -131,6 +133,7 @@ std::string SSLClientSocket::receive(){
 			if(! BIO_should_retry(bio)){
 				//Handle failed read
 				std::clog << "reading failed" << std::endl;
+				throw std::runtime_error("Socket dead.");
 			}
 		}
 	}
@@ -150,6 +153,7 @@ int SSLClientSocket::receive(char* buff,const int length){
 			if(! BIO_should_retry(bio)){
 				//Handle failed read
 				std::clog << "reading failed" << std::endl;
+				throw std::runtime_error("Socket dead.");
 			}
 		}
 		return read;

@@ -4,6 +4,7 @@
 #include "mumble/MumbleConnector.h"
 #include <string>
 #include <iostream>
+#include <exception>
 
 #define MUMBLE_DEFAULT_PORT 64738
 #define NAME "Test"
@@ -13,11 +14,15 @@ int main(){
 	std::cout << "creating connector" << std::endl;
 	SSLClientSocket mySocket(s,MUMBLE_DEFAULT_PORT);
 	Connector* c = new MumbleConnector(&mySocket,NAME);
-	SimpleMumbleBot b(c);
-	b.preRun();
-	std::cout << "done" << std::endl;
-	while(1){
-		b.run();
+	try{
+		SimpleMumbleBot b(c);
+		b.preRun();
+		while(1){
+			b.run();
+		}
+	}catch(std::runtime_error& error){
+		std::cout << "connection failed, " << error.what() << std::endl;
+		std::cout << "shutting down" << std::endl;
 	}
 	delete c;
 }
