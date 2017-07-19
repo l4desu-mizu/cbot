@@ -1,4 +1,6 @@
 #pragma once
+#include "Entities.h"
+#include <string>
 
 struct Text{
 	std::string message;

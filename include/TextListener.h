@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Entities.h"
 #include "Text.h"
-#include <string>
 
 class TextListener{
 	public:
