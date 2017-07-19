@@ -93,6 +93,11 @@ void MumbleConnector::addUserListener(EntityListener* l){
 	userListeners.push_back(l);
 }
 
+void MumbleConnector::addTextListener(TextListener* l){
+	std::lock_guard<std::mutex> lock(textListenerMutex);
+	textListeners.push_back(l);
+}
+
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){
 		const std::string tmp=(socket->receive());

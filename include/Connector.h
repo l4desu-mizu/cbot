@@ -15,5 +15,6 @@ class Connector{
 		virtual void whisperTextMessage(const std::vector<Channel>& channels, const std::string& message)=0;
 		virtual void addChannelListener(EntityListener* l)=0;
 		virtual void addUserListener(EntityListener* l)=0;
+		virtual void addTextListener(TextListener* l)=0;
 		//TODO virtual void disconnect()=0;?
 };
