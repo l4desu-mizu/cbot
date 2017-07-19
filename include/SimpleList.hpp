@@ -13,8 +13,8 @@ class SimpleList{
 		~SimpleList();
 		bool contains(const X& entity);
 		void add(X entity);
-		X* get_allocated(const X& entity);
-		X* get_allocated(const int id);
+		X* getAllocated(const X& entity);
+		X* getAllocated(const int id);
 		void remove(const int id);
 		void remove(const X& entity);
 		std::list<X> getCurrent();
@@ -73,7 +73,7 @@ void SimpleList<X>::add(X entity){
 
 template <>
 inline
-Entity* SimpleList<Entity>::get_allocated(const int id){
+Entity* SimpleList<Entity>::getAllocated(const int id){
 	std::lock_guard<std::mutex> lock(listMutex);
 	for(auto it=entities.begin();it!=entities.end();it++){
 		if(it->getID()==id){
@@ -85,7 +85,7 @@ Entity* SimpleList<Entity>::get_allocated(const int id){
 
 template <class X>
 inline
-X* SimpleList<X>::get_allocated(const int id){
+X* SimpleList<X>::getAllocated(const int id){
 	std::lock_guard<std::mutex> lock(listMutex);
 	auto it=entities.begin();
 	for(int i=0;i<id&&it!=entities.end();i++,it++){}
@@ -97,7 +97,7 @@ X* SimpleList<X>::get_allocated(const int id){
 
 template <class X>
 inline
-X* SimpleList<X>::get_allocated(const X& entity){
+X* SimpleList<X>::getAllocated(const X& entity){
 	std::lock_guard<std::mutex> lock(listMutex);
 	auto it=std::find(entities.begin(), entities.end(), entity);
 	if( it != entities.end()) {
