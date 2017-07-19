@@ -179,16 +179,21 @@ void MumbleConnector::handle(const MumbleProto::ServerSync& syncMsg){
 }
 void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	std::clog<< "ChannelState" <<std::endl;
+
+	//check for channelstate
 	if(!stateMsg.has_channel_id()){
 		return;
 	}
 
+	//create channel
 	const int channelID=stateMsg.channel_id();
 	std::string channelName="";
 	if(stateMsg.has_name()){
 		channelName=stateMsg.name();
 	}
 	const Channel newChannel(channelID,channelName,channelID==this->channelID);
+
+	//update channels
 	notifyListeners(newChannel);
 }
 void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
@@ -199,15 +204,18 @@ void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 	std::clog<< "UserState" <<std::endl;
+	//first UserState this Connector gets should be the sessionID of the Connectors User
 	if(firstUserState&&stateMsg.has_session()){
 		sessionID=stateMsg.session();
 		firstUserState=false;
 	}
+	//get the id of the channel this connector is currently connected to
 	if(stateMsg.has_channel_id()&&stateMsg.has_session()&&stateMsg.session()==sessionID){
 		channelID=stateMsg.channel_id();
 		const Channel newChannel(channelID,"",true);
 		notifyListeners(newChannel);
 	}
+	//update users
 	if(stateMsg.has_session()){
 		int userID=stateMsg.session();
 		std::string name="";
