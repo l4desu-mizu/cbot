@@ -1,6 +1,5 @@
 #include "Bot.h"
 #include <thread>
-#include <iostream>
 
 #define FLOOD_WARNING 8
 
