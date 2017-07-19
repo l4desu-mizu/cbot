@@ -2,8 +2,7 @@
 #include "mumble.pb.h"
 #include "Connector.h"
 #include "ManagedSSLSocket.h"
-#include "Entities.h"
-#include "SimpleList.hpp"
+#include "EntityListener.h"
 #include <thread>
 #include <iostream>
 #include <mutex>
@@ -64,12 +63,15 @@ class MumbleConnector: public Connector{
 		MumbleConnector(std::string host,int port=64738); //mumble default port
 		~MumbleConnector();
 		void sendTextMessage(const std::string& message);
-		SimpleList<Channel>& getChannels();
+		void addChannelListener(const EntityListener& l);
+		void addUserListener(const EntityListener& l);
 	private:
 		const std::string username;
 		const std::string password;
-		std::mutex channelMutex;
-		SimpleList<Channel> channels;
+		std::mutex channelListenerMutex;
+		std::vector<EntityListener> channelListeners;
+		std::mutex userListenerMutex;
+		std::vector<EntityListener> userListeners;
 		ManagedSSLSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
 		MumbleProto::Ping pingPackage;

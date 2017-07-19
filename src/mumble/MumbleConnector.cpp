@@ -150,20 +150,24 @@ void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 		return;
 	}
 
-	std::lock_guard<std::mutex> lock(channelMutex);
 	const int channelID=stateMsg.channel_id();
 	std::string channelName="";
 	if(stateMsg.has_name()){
 		channelName=stateMsg.name();
 	}
 	const Channel newChannel(channelID,channelName);
-	channels.add(newChannel);
+	std::lock_guard<std::mutex> lock(channelListenerMutex);
+	for(EntityListener& l:channelListeners){
+		l.notify(newChannel);
+	}
 }
 void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 	std::clog<< "ChannelRemove" <<std::endl;
-	std::lock_guard<std::mutex> lock(channelMutex);
 	if(channelMsg.has_channel_id()){
-		channels.remove(channelMsg.channel_id());
+		std::lock_guard<std::mutex> lock(channelListenerMutex);
+		for(EntityListener& l:channelListeners){
+			l.unnotify(channelMsg.channel_id());
+		}
 	}
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
