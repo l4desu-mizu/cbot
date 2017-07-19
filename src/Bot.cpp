@@ -1,7 +1,6 @@
 #include "Bot.h"
 #include <thread>
 #include <iostream>
-#include <algorithm>
 
 Bot::Bot(Connector* connection):connection(connection){
 	connection->addChannelListener(this);
@@ -52,8 +51,8 @@ void Bot::preRun(){
 	const std::string greetings="Greetings!";
 	std::vector<User> use=users.getCurrent();
 	const std::string friends="How are you??";
-	connection->whisperTextMessage(use,friends);
 	connection->whisperTextMessage(chan,greetings);
+	connection->whisperTextMessage(use,friends);
 }
 void Bot::run(){
 	std::this_thread::sleep_for(std::chrono::seconds(1));
