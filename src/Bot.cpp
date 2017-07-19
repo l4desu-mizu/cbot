@@ -9,14 +9,12 @@ Bot::Bot(Connector* connection):connection(connection){
 }
 Bot::~Bot(){
 }
-void Bot::notify(const Text text){
-	std::lock_guard<std::mutex> ulock(meLock);
-	std::lock_guard<std::mutex> clock(channelLock);
+void Bot::notify(const Text& text){
 	if(text.to==*me||text.to==*currentChannel){
 		respond(text);
 	}
 }
-void Bot::notify(const Entity e){
+void Bot::notify(const Entity& e){
 	if(e.getType()==EntityType::Channel_type){
 		Channel c=e;
 		channels.add(c);
@@ -33,7 +31,7 @@ void Bot::notify(const Entity e){
 		}
 	}
 }
-void Bot::unnotify(const Entity e){
+void Bot::unnotify(const Entity& e){
 	if(e.getType()==EntityType::Channel_type){
 		channels.remove(e.getID());
 	}else if(e.getType()==EntityType::User_type){

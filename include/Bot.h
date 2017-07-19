@@ -4,17 +4,16 @@
 #include "EntityListener.h"
 #include "Connector.h"
 #include "IBot.h"
-
-#include <mutex>
 #include <string>
+#include <mutex>
 
 class Bot: public TextListener,EntityListener, IBot{
 	public:
 		Bot(Connector* connection);
 		~Bot();
-		void notify(const Text text);
-		void notify(const Entity e);
-		void unnotify(const Entity e);
+		void notify(const Text& text);
+		void notify(const Entity& e);
+		void unnotify(const Entity& e);
 		void run();
 	protected:
 		Connector* connection;
