@@ -60,8 +60,10 @@ enum MumbleMessageType{//Maybe macros?
 
 class MumbleConnector: public Connector{
 	public:
-		MumbleConnector(std::string host,int port=64738); //mumble default port
+		MumbleConnector(const std::string host,const int port=64738); //mumble default port
+		MumbleConnector(ManagedSSLSocket* socket, const std::string username, const std::string password="");
 		~MumbleConnector();
+		void connect();
 		void sendTextMessage(const std::string& message);
 		void addChannelListener(const EntityListener& l);
 		void addUserListener(const EntityListener& l);
@@ -83,7 +85,7 @@ class MumbleConnector: public Connector{
 		std::thread receiveThread;
 		std::thread pingThread;
 		void handleReceives();
-		void connect();
+		void connection();
 		void auth();
 		void disconnect();
 		void sendProtoMessage(const MumbleMessageType& msgType,const std::string& message);

@@ -8,19 +8,13 @@
 #define TIME_IN_MS std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count()
 #define PING_TIMEOUT 20 //max 30
 
-MumbleConnector::MumbleConnector(std::string host,int port):username("Test"),password(""){
-	//open socket
-	//handshake
-	//socket=new ManagedSSLSocket(host,port,"./cert/mumble_bot.cert","./cert/mumble_bot_cert.key");//presumably done...
-	firstUserState=true;
+MumbleConnector::MumbleConnector(ManagedSSLSocket* socket, const std::string username, const std::string password):
+socket(socket),
+username(username),
+password(password){
+}
+MumbleConnector::MumbleConnector(const std::string host,const int port):username("Test"),password(""){
 	socket=new ManagedSSLSocket(host,port);//presumably done...
-	receiveLoopRuns=true;
-	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
-	std::clog << "connecting to Mumble" << std::endl;
-	connect();
-	auth();
-	ping=true;
-	pingThread=std::thread(&MumbleConnector::pingLoop,this);
 }
 
 MumbleConnector::~MumbleConnector(){
@@ -33,6 +27,17 @@ MumbleConnector::~MumbleConnector(){
 		delete socket;
 		socket=NULL;
 	}
+}
+
+void MumbleConnector::connect(){
+	firstUserState=true;
+	receiveLoopRuns=true;
+	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
+	std::clog << "connecting to Mumble" << std::endl;
+	connection();
+	auth();
+	ping=true;
+	pingThread=std::thread(&MumbleConnector::pingLoop,this);
 }
 
 void MumbleConnector::sendTextMessage(const std::string& message){
@@ -64,7 +69,7 @@ void MumbleConnector::handleReceives(){
 	}
 }
 
-void MumbleConnector::connect(){
+void MumbleConnector::connection(){
 	//version exchange (skippable)
 	const int versionBytes=0x0102060;
 	const std::string release = "1.2.6";
