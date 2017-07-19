@@ -1,7 +1,7 @@
 #pragma once
 #include "mumble.pb.h"
 #include "Connector.h"
-#include "ManagedSSLSocket.h"
+#include "SSLClientSocket.h"
 #include "TextListener.h"
 #include "EntityListener.h"
 #include <thread>
@@ -61,7 +61,7 @@ enum MumbleMessageType{//Maybe macros?
 
 class MumbleConnector: public Connector{
 	public:
-		MumbleConnector(ManagedSSLSocket* socket, const std::string username, const std::string password="");
+		MumbleConnector(SSLClientSocket* socket, const std::string username, const std::string password="");
 		~MumbleConnector();
 		void connect();
 		void updateUserInfo(const User& user);
@@ -85,7 +85,7 @@ class MumbleConnector: public Connector{
 		std::vector<EntityListener*> userListeners;
 		std::mutex textListenerMutex;
 		std::vector<TextListener*> textListeners;
-		ManagedSSLSocket* socket=NULL;
+		SSLClientSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
 		MumbleProto::Ping pingPackage;
 		bool receiveLoopRuns=false;

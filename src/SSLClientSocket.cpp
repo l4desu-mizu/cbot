@@ -1,9 +1,9 @@
-#include "ManagedSSLSocket.h"
+#include "SSLClientSocket.h"
 #include "openssl/bio.h"
 #include <sstream>
 #include <iostream>
 
-ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port, bool useEncrypt):
+SSLClientSocket::SSLClientSocket(std::string hostname, int port, bool useEncrypt):
 certFile(""),
 certKeyFile(""){
 	if(useEncrypt){
@@ -22,13 +22,13 @@ certKeyFile(""){
 	}
 }
 
-ManagedSSLSocket::ManagedSSLSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile):
+SSLClientSocket::SSLClientSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile):
 certFile(certFile),
 certKeyFile(certKeyFile){
 	initSSLSocket(hostname,port);
 }
 
-ManagedSSLSocket::~ManagedSSLSocket(){
+SSLClientSocket::~SSLClientSocket(){
 	if(sslContext!=NULL){
 		SSL_CTX_free(sslContext);
 		sslContext=NULL;
@@ -39,7 +39,7 @@ ManagedSSLSocket::~ManagedSSLSocket(){
 	}
 }
 
-void ManagedSSLSocket::initSSLSocket(const std::string& hostname, const int& port){
+void SSLClientSocket::initSSLSocket(const std::string& hostname, const int& port){
 	SSL_load_error_strings();
 	ERR_load_BIO_strings();
 	OpenSSL_add_all_algorithms();
@@ -84,21 +84,21 @@ void ManagedSSLSocket::initSSLSocket(const std::string& hostname, const int& por
 	}
 }
 
-std::string ManagedSSLSocket::createTargetHost(const std::string& host,const int& port){
+std::string SSLClientSocket::createTargetHost(const std::string& host,const int& port){
 	std::stringstream targetHost;
 	targetHost << host << ":" << port;
 	return targetHost.str();
 }
 
-void ManagedSSLSocket::disconnect(){
+void SSLClientSocket::disconnect(){
 	BIO_reset(bio);
 }
 
-int ManagedSSLSocket::send(std::string message){
+int SSLClientSocket::send(std::string message){
 	return this->send(message.c_str(),message.size());
 }
 
-int ManagedSSLSocket::send(const char* message,const int length){
+int SSLClientSocket::send(const char* message,const int length){
 	int res;
 	res=BIO_write(bio,message,length);
 	if(res<=0){
@@ -112,7 +112,7 @@ int ManagedSSLSocket::send(const char* message,const int length){
 	return res;
 }
 
-std::string ManagedSSLSocket::receive(){
+std::string SSLClientSocket::receive(){
 	const short length=256;
 	char buff[length];
 	int read=length;
@@ -137,7 +137,7 @@ std::string ManagedSSLSocket::receive(){
 	out.flush();
 	return out.str();
 }
-int ManagedSSLSocket::receive(char* buff,const int length){
+int SSLClientSocket::receive(char* buff,const int length){
 	int read;
 	while(read>=length){
 		read=BIO_read(bio, buff,length);

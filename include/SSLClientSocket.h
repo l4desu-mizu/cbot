@@ -2,11 +2,11 @@
 #include <openssl/ssl.h>
 #include <string>
 
-class ManagedSSLSocket{
+class SSLClientSocket{
 	public:
-		ManagedSSLSocket(std::string hostname, int port, bool useEncrypt=true);
-		ManagedSSLSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile);
-		~ManagedSSLSocket();
+		SSLClientSocket(std::string hostname, int port, bool useEncrypt=true);
+		SSLClientSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile);
+		~SSLClientSocket();
 		void disconnect();
 		int send(std::string message);
 		int send(const char* message,const int length);

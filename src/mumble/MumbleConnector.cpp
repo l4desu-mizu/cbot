@@ -9,7 +9,7 @@
 #define PING_TIMEOUT 20 //max 30
 #define MAX_WAIT 15
 
-MumbleConnector::MumbleConnector(ManagedSSLSocket* socket, const std::string username, const std::string password):
+MumbleConnector::MumbleConnector(SSLClientSocket* socket, const std::string username, const std::string password):
 socket(socket),
 username(username),
 password(password){

@@ -1,4 +1,4 @@
-#include "ManagedSSLSocket.h"
+#include "SSLClientSocket.h"
 #include "Connector.h"
 #include "SimpleMumbleBot.h"
 #include "mumble/MumbleConnector.h"
@@ -11,7 +11,7 @@ int main(){
 	std::string s = "sneaky-ninja.de";
 	s = "localhost";
 	std::cout << "creating connector" << std::endl;
-	ManagedSSLSocket mySocket(s,MUMBLE_DEFAULT_PORT);
+	SSLClientSocket mySocket(s,MUMBLE_DEFAULT_PORT);
 	Connector* c = new MumbleConnector(&mySocket,NAME);
 	SimpleMumbleBot b(c);
 	b.preRun();
