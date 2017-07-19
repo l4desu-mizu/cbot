@@ -64,7 +64,9 @@ class MumbleConnector: public Connector{
 		~MumbleConnector();
 		void connect();
 		void updateUserInfo(const User& user);
+		void moveToTextChat(const Entity& c);
 		void sendTextMessage(const std::string& message);
+
 		void addChannelListener(EntityListener* l);
 		void addUserListener(EntityListener* l);
 	private:

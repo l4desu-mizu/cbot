@@ -8,6 +8,7 @@ class Connector{
 		virtual ~Connector(){}
 		virtual void connect()=0;
 		virtual void updateUserInfo(const User& u)=0;
+		virtual void moveToTextChat(const Entity& c)=0;
 		virtual void sendTextMessage(const std::string& message)=0;
 		virtual void addChannelListener(EntityListener* l)=0;
 		virtual void addUserListener(EntityListener* l)=0;
