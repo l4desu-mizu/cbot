@@ -13,6 +13,8 @@ class SimpleList{
 		~SimpleList();
 		bool contains(const X& entity);
 		void add(X entity);
+		X* get_allocated(const X& entity);
+		X* get_allocated(const int id);
 		void remove(const int id);
 		void remove(const X& entity);
 	private:
@@ -66,6 +68,41 @@ void SimpleList<X>::add(X entity){
 	}else{//does not contain the element
 		entities.push_back(entity);
 	}
+}
+
+template <>
+inline
+Entity* SimpleList<Entity>::get_allocated(const int id){
+	std::lock_guard<std::mutex> lock(listMutex);
+	for(auto it=entities.begin();it!=entities.end();it++){
+		if(it->getID()==id){
+			return &(*it);
+		}
+	}
+	return NULL;
+}
+
+template <class X>
+inline
+X* SimpleList<X>::get_allocated(const int id){
+	std::lock_guard<std::mutex> lock(listMutex);
+	auto it=entities.begin();
+	for(int i=0;i<id&&it!=entities.end();i++,it++){}
+	if(it!=entities.end()){
+		return &(*it);
+	}
+	return NULL;
+}
+
+template <class X>
+inline
+X* SimpleList<X>::get_allocated(const X& entity){
+	std::lock_guard<std::mutex> lock(listMutex);
+	auto it=std::find(entities.begin(), entities.end(), entity);
+	if( it != entities.end()) {
+		return &(*it);
+	}
+	return NULL;
 }
 
 template <>
