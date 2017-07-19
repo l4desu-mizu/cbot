@@ -63,6 +63,7 @@ class MumbleConnector: public Connector{
 		MumbleConnector(ManagedSSLSocket* socket, const std::string username, const std::string password="");
 		~MumbleConnector();
 		void connect();
+		void updateUserInfo(const User& user);
 		void sendTextMessage(const std::string& message);
 		void addChannelListener(EntityListener* l);
 		void addUserListener(EntityListener* l);
@@ -70,8 +71,7 @@ class MumbleConnector: public Connector{
 		const std::string username;
 		const std::string password;
 		int channelID=-1;
-		int sessionID=-1;
-		bool firstUserState;
+		int sessionID=-1;//TODO: the connector (sadly) needs to keep track of the users and channels
 		std::mutex channelListenerMutex;
 		std::vector<EntityListener*> channelListeners;
 		std::mutex userListenerMutex;

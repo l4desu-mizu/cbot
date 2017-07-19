@@ -32,6 +32,12 @@ void MumbleConnector::connect(){
 	pingThread=std::thread(&MumbleConnector::pingLoop,this);
 }
 
+void MumbleConnector::updateUserInfo(const User& user){
+	MumbleProto::UserState users;
+	users.set_session(user.getID());
+	sendProtoMessage(MumbleMessageType::UserState, users);
+}
+
 void MumbleConnector::sendTextMessage(const std::string& message){
 }
 
