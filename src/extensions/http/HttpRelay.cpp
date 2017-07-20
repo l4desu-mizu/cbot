@@ -1,4 +1,4 @@
-#include "extensions/http/HttpRelayBot.h"
+#include "extensions/http/HttpRelay.h"
 #include <string>
 #include <sstream>
 
@@ -7,19 +7,19 @@ static size_t httpCallback(void *contents, size_t size, size_t nmemb, void *user
 	return size * nmemb;
 };
 
-HttpRelayBot::HttpRelayBot(){
+HttpRelay::HttpRelay(){
 	curl=curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_URL, "http://bytezero.de/mumble/barkeeper.php");
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &httpCallback);
 	curl_easy_setopt(curl, CURLOPT_POST, 1L);//set Post
 }
-HttpRelayBot::~HttpRelayBot(){
+HttpRelay::~HttpRelay(){
 	if(curl!=NULL){
 		curl_easy_cleanup(curl);
 		curl=NULL;
 	}
 }
-Text HttpRelayBot::relayMessage(const Text& text){
+Text HttpRelay::relayMessage(const Text& text){
 	std::stringstream queryBuilder;
 	std::string query;
 	CURLcode res;

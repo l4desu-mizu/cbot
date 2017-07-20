@@ -3,10 +3,10 @@
 #include "extensions/TextExtension.h"
 #include <curl/curl.h>
 
-class HttpRelayBot:public TextExtension{
+class HttpRelay:public TextExtension{
 	public:
-		HttpRelayBot();
-		~HttpRelayBot();
+		HttpRelay();
+		~HttpRelay();
 		Text relayMessage(const Text& text);
 	private:
 		CURL* curl=NULL;
