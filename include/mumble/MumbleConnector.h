@@ -64,6 +64,7 @@ class MumbleConnector: public Connector{
 		MumbleConnector(SSLClientSocket* socket, const std::string username, const std::string password="");
 		~MumbleConnector();
 		void connect();
+		void disconnect();
 		void updateUserInfo(const User& user);
 		void moveToTextChat(const Entity& c);
 		void sendTextMessage(const std::string& message);

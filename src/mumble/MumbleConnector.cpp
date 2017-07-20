@@ -17,10 +17,7 @@ password(password){
 
 MumbleConnector::~MumbleConnector(){
 	std::clog << "connector ends" << std::endl;
-	receiveLoopRuns=false;
-	receiveThread.join();
-	ping=false;
-	pingThread.join();
+	disconnect();
 }
 
 void MumbleConnector::connect(){
@@ -39,6 +36,13 @@ void MumbleConnector::connect(){
 		}
 	}
 	throw std::runtime_error("Connection could not be poperly established. Connection Timed out.");
+}
+void MumbleConnector::disconnect(){
+	serverSyncd=false;
+	receiveLoopRuns=false;
+	receiveThread.join();
+	ping=false;
+	pingThread.join();
 }
 
 void MumbleConnector::updateUserInfo(const User& user){
