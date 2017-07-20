@@ -33,6 +33,7 @@ SET(BASE_SRC
 	${PROTO_SRCS}
 	${PROTO_HS}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/Connector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/MumbleConnector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/MumbleHeader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SSLClientSocket.cpp

@@ -7,7 +7,6 @@
 #include "ConnectionListener.h"
 #include <thread>
 #include <iostream>
-#include <mutex>
 
 #define HEADER_SIZE 6
 #define HEADER_TYPE_SIZE 2
@@ -70,25 +69,12 @@ class MumbleConnector: public Connector{
 		void sendTextMessage(const std::string& message);
 		void whisperTextMessage(const std::vector<User>& users, const std::string& message);
 		void whisperTextMessage(const std::vector<Channel>& channels, const std::string& message);
-
-		void addConnectionListener(ConnectionListener* l);
-		void addChannelListener(EntityListener* l);
-		void addUserListener(EntityListener* l);
-		void addTextListener(TextListener* l);
 	private:
 		const std::string username;
 		const std::string password;
 		bool serverSyncd=false;
 		int channelID=-1;
 		int sessionID=-1;//TODO: the connector (sadly) needs to keep track of the users and channels
-		std::mutex connectionListenerMutex;
-		std::vector<ConnectionListener*> connectionListeners;
-		std::mutex channelListenerMutex;
-		std::vector<EntityListener*> channelListeners;
-		std::mutex userListenerMutex;
-		std::vector<EntityListener*> userListeners;
-		std::mutex textListenerMutex;
-		std::vector<TextListener*> textListeners;
 		SSLClientSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
 		MumbleProto::Ping pingPackage;
@@ -104,11 +90,6 @@ class MumbleConnector: public Connector{
 		void dispatchMessage(const MumbleHeader& header, const std::string& message);
 
 		void pingLoop();
-
-		void notifyListeners(const ConnectionEvent& event);
-		void notifyListeners(const Text& text);
-		void notifyListeners(const Entity& ent);
-		void unnotifyListeners(const int id, const EntityType type);
 
 		void handle(const MumbleProto::Version& version);
 		void handle(const MumbleProto::Reject& rejectMsg);
