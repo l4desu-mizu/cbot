@@ -37,6 +37,9 @@ struct BotInfo{
 	std::string channel;
 };
 
+//used in main to run the bot
+bool runBot=false;
+
 //{{{ config read begin
 void readBotInfo(dictionary* ini, BotInfo& bot){
 	//check if any configurations were made
@@ -81,6 +84,10 @@ void readBotInfo(dictionary* ini, BotInfo& bot){
 }
 //}}} config read end
 
+void stopBotLoop(int signal){
+	runBot=false;
+}
+
 int main(int argc,char** argv){
 
 	//read ini file
@@ -96,7 +103,7 @@ int main(int argc,char** argv){
 		return 1;
 	}
 
-	//fill botInfo with default values
+	//config: fill botInfo with default values
 	BotInfo botInfo;
 	botInfo.type=SIMPLE_MUMBLE_BOT;
 	botInfo.username=DEFAULT_USERNAME;
@@ -109,6 +116,10 @@ int main(int argc,char** argv){
 		return 1;
 	}
 
+	//prepare bot loop exit
+	signal(SIGINT,stopBotLoop);
+
+	//bot pointers
 	SSLClientSocket* mySocket=NULL;
 	Connector* connector=NULL;
 	IBot* bot=NULL;
@@ -124,7 +135,8 @@ int main(int argc,char** argv){
 
 		//run the bot
 		bot->preRun();
-		while(1){
+		runBot=true;
+		while(runBot){
 			bot->run();
 		}
 	}catch(std::runtime_error& error){//catch errors in run or connection
