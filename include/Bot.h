@@ -2,16 +2,18 @@
 #include "SimpleList.hpp"
 #include "TextListener.h"
 #include "EntityListener.h"
+#include "ConnectionListener.h"
 #include "Connector.h"
 #include "IBot.h"
 #include <string>
 #include <mutex>
 #include <queue>
 
-class Bot: public TextListener,EntityListener, IBot{
+class Bot: public ConnectionListener,TextListener,EntityListener, IBot{
 	public:
 		Bot(Connector* connection);
 		~Bot();
+		void notify(const ConnectionEvent e);
 		void notify(const Text& text);
 		void notify(const Entity& e);
 		void unnotify(const Entity& e);
@@ -19,6 +21,7 @@ class Bot: public TextListener,EntityListener, IBot{
 		void run();
 	protected:
 		Connector* connection;
+		bool connected;
 		SimpleList<Channel> channels;
 		SimpleList<User> users;
 		std::mutex textingMutex;

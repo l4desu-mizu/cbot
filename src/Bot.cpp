@@ -7,9 +7,22 @@ Bot::Bot(Connector* connection):connection(connection){
 	connection->addChannelListener(this);
 	connection->addUserListener(this);
 	connection->addTextListener(this);
+	connection->addConnectionListener(this);
 	connection->connect();
 }
 Bot::~Bot(){
+}
+void Bot::notify(const ConnectionEvent e){
+	if(e==ConnectionEvent::Disconnect){
+		channels.clear();
+		users.clear();
+		me=NULL;
+		currentChannel=NULL;
+		connected=false;
+		clearQueue();
+	}else if(e==ConnectionEvent::Connect){
+		connected=true;
+	}
 }
 void Bot::notify(const Text& text){
 	Text localText=text;
@@ -45,6 +58,9 @@ void Bot::unnotify(const Entity& e){
 void Bot::preRun(){
 }
 void Bot::run(){
+	if(!connected){//skip if not connected
+		return;
+	}
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	if(lastTextQueueSize+FLOOD_WARNING<receivedTexts.size()){
 		lastTextQueueSize=0;
@@ -61,6 +77,7 @@ void Bot::run(){
 void Bot::clearQueue(){
 	std::queue<Text> empty;
 	std::swap(receivedTexts,empty);
+	lastTextQueueSize=0;
 }
 
 void Bot::updateData(Entity* ent){
