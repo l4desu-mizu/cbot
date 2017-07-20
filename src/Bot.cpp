@@ -92,12 +92,16 @@ void Bot::run(){
 	}
 }
 
-void Bot::clearQueue(){
-	std::queue<Text> empty;
-	std::swap(receivedTexts,empty);
-	lastTextQueueSize=0;
+User Bot::getUserData(const int id){
+	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&users);
+	User user=*ents->getAllocated(id);
+	return user;
 }
-
+Channel Bot::getChannelData(const int id){
+	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&channels);
+	Channel channel=*ents->getAllocated(id);
+	return channel;
+}
 void Bot::updateData(Entity* ent){
 	Entity* pEnt=NULL;
 	if(ent->getType()==EntityType::User_type){
@@ -111,13 +115,10 @@ void Bot::updateData(Entity* ent){
 	ent->setConcern(pEnt->getConcern());
 	ent->setName(pEnt->getName());
 }
-User Bot::getUserData(const int id){
-	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&users);
-	User user=*ents->getAllocated(id);
-	return user;
+
+void Bot::clearQueue(){
+	std::queue<Text> empty;
+	std::swap(receivedTexts,empty);
+	lastTextQueueSize=0;
 }
-Channel Bot::getChannelData(const int id){
-	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&channels);
-	Channel channel=*ents->getAllocated(id);
-	return channel;
-}
+
