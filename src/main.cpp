@@ -115,7 +115,7 @@ int main(int argc,char** argv){
 		if(botInfo.type==HTTP_MUMBLE_BOT){
 			bot = new HttpMumbleBot(connector,botInfo.script,botInfo.channel);
 		}else{
-			bot = new SimpleMumbleBot(connector);
+			bot = new SimpleMumbleBot(connector,botInfo.channel);
 		}
 
 		//run the bot
