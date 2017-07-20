@@ -12,7 +12,7 @@ void SimpleMumbleBot::preRun(){
 	std::cout << "moving to " << channel << std::endl;
 	std::vector<Channel> chan=channels.getCurrent();
 	for(auto it=chan.begin();it!=chan.end();it++){
-		if(it->getName()==channel){//currently hardcoded, setup via configs?
+		if(it->getName()==channel){
 			connection->moveToTextChat(*it);
 			break;
 		}
