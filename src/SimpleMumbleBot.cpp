@@ -1,5 +1,6 @@
 #include "SimpleMumbleBot.h"
 #include <iostream>
+#include <ctime>
 
 SimpleMumbleBot::SimpleMumbleBot(Connector* connection):Bot(connection){
 }
@@ -23,5 +24,22 @@ void SimpleMumbleBot::preRun(){
 	connection->whisperTextMessage(use,friends);
 }
 bool SimpleMumbleBot::respond(const Text& text){
+	if(text.message.find("time")!=std::string::npos){
+		std::string response=getTime();
+		connection->sendTextMessage(response);
+	}
 	return true;
+}
+
+std::string SimpleMumbleBot::getTime(){
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer[80];
+
+	time (&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	strftime(buffer,sizeof(buffer),"%d-%m-%Y %I:%M:%S",timeinfo);
+	std::string str(buffer);
+	return str;
 }

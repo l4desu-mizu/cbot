@@ -9,4 +9,6 @@ class SimpleMumbleBot:public Bot{
 		void preRun();
 	protected:
 		bool respond(const Text& text);
+	private:
+		std::string getTime();
 };
