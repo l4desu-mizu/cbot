@@ -18,6 +18,7 @@ class SimpleList{
 		void remove(const int id);
 		void remove(const X& entity);
 		std::vector<X> getCurrent();
+		void clear();
 	private:
 		std::mutex listMutex;
 		std::vector<X> entities;
@@ -142,4 +143,10 @@ template <class X>
 inline
 std::vector<X> SimpleList<X>::getCurrent(){
 	return entities;
+}
+
+template <class X>
+inline
+void SimpleList<X>::clear(){
+	entities.clear();
 }
