@@ -8,6 +8,7 @@
 #include <string>
 #include <mutex>
 #include <queue>
+#include <atomic>
 
 class Bot: public ConnectionListener,TextListener,EntityListener, IBot{
 	public:
@@ -21,7 +22,8 @@ class Bot: public ConnectionListener,TextListener,EntityListener, IBot{
 		void run();
 	protected:
 		Connector* connection;
-		bool connected;
+		std::atomic<bool> connected;
+		std::atomic<bool> die;
 		SimpleList<Channel> channels;
 		SimpleList<User> users;
 		std::mutex textingMutex;

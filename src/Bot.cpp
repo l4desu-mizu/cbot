@@ -3,7 +3,10 @@
 
 #define FLOOD_WARNING 8
 
-Bot::Bot(Connector* connection):connection(connection){
+Bot::Bot(Connector* connection):
+connection(connection),
+connected(false),
+die(false){
 	connection->addChannelListener(this);
 	connection->addUserListener(this);
 	connection->addTextListener(this);
@@ -13,15 +16,25 @@ Bot::Bot(Connector* connection):connection(connection){
 Bot::~Bot(){
 }
 void Bot::notify(const ConnectionEvent e){
-	if(e==ConnectionEvent::Disconnect){
-		channels.clear();
-		users.clear();
-		me=NULL;
-		currentChannel=NULL;
-		connected=false;
-		clearQueue();
+	switch(e){
+		case ConnectionEvent::Connect:
+			connected=true;
+			break;
+		case ConnectionEvent::Ban:
+			die=true;
+		case ConnectionEvent::Kick: //always do disconnect stuff
+		case ConnectionEvent::Disconnect:
+			connected=false;
+			channels.clear();
+			users.clear();
+			me=NULL;
+			currentChannel=NULL;
+			clearQueue();
+	}
+
+	if(e==ConnectionEvent::Disconnect||e==ConnectionEvent::Kick){
+	}else if(e==ConnectionEvent::Ban){
 	}else if(e==ConnectionEvent::Connect){
-		connected=true;
 	}
 }
 void Bot::notify(const Text& text){
@@ -55,9 +68,13 @@ void Bot::unnotify(const Entity& e){
 		users.remove(e.getID());
 	}
 }
+
 void Bot::preRun(){
 }
 void Bot::run(){
+	if(die){
+		throw std::runtime_error("They dun want meh QQ");
+	}
 	if(!connected){//skip if not connected
 		return;
 	}
@@ -74,6 +91,7 @@ void Bot::run(){
 		}
 	}
 }
+
 void Bot::clearQueue(){
 	std::queue<Text> empty;
 	std::swap(receivedTexts,empty);
