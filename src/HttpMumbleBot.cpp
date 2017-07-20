@@ -18,11 +18,13 @@ HttpMumbleBot::~HttpMumbleBot(){
 }
 void HttpMumbleBot::preRun(){
 	Bot::preRun();
-	std::vector<Channel> chan=channels.getCurrent();
-	for(auto it=chan.begin();it!=chan.end();it++){
-		if(it->getName()==prefferedChannel){
-			connection->moveToTextChat(*it);
-			break;
+	if(prefferedChannel.size()>0){
+		std::vector<Channel> chan=channels.getCurrent();
+		for(auto it=chan.begin();it!=chan.end();it++){
+			if(it->getName()==prefferedChannel){
+				connection->moveToTextChat(*it);
+				break;
+			}
 		}
 	}
 }
