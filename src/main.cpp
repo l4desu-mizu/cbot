@@ -100,6 +100,7 @@ int main(int argc,char** argv){
 	}
 	if(ini==NULL){
 		std::cout << "Something wrong with the ini file." << std::endl;
+		iniparser_freedict(ini);
 		return 1;
 	}
 
@@ -111,6 +112,7 @@ int main(int argc,char** argv){
 	botInfo.port=DEFAULT_MUMBLE_PORT;
 	try{
 		readBotInfo(ini,botInfo);
+		iniparser_freedict(ini);//final use of ini
 	}catch(std::runtime_error& e){
 		std::cout << e.what() << std::endl;
 		return 1;
