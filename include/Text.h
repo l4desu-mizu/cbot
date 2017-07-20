@@ -4,6 +4,6 @@
 
 struct Text{
 	std::string message;
-	const Entity from;
-	const Entity to;
+	Entity from;
+	Entity to;
 };
