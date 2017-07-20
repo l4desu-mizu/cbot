@@ -9,7 +9,7 @@ static size_t httpCallback(void *contents, size_t size, size_t nmemb, void *user
 
 HttpRelay::HttpRelay(const std::string url){
 	curl=curl_easy_init();
-	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &httpCallback);
 	curl_easy_setopt(curl, CURLOPT_POST, 1L);//set Post
 }
@@ -37,5 +37,5 @@ Text HttpRelay::relayMessage(const Text& text){
 	//answer
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resultBuffer);
 	res = curl_easy_perform(curl);
-	return {resultBuffer,text.to,text.from};
+	return {resultBuffer,text.to,text.from,text.isPrivate};
 }
