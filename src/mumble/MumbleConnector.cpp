@@ -174,7 +174,12 @@ void MumbleConnector::pingLoop(){
 	while(ping){//TODO: count ping packages and inform server about delays
 		pingPackage.set_timestamp(TIME_IN_MS);
 		sendProtoMessage(MumbleMessageType::Ping,pingPackage);
-		std::this_thread::sleep_for(std::chrono::seconds(PING_TIMEOUT));
+		for(int i=0;i<PING_TIMEOUT*2;i++){
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			if(!ping){
+				break;
+			}
+		}
 	}
 }
 
