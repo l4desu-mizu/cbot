@@ -151,7 +151,7 @@ std::string SSLClientSocket::receive(){
 	return out.str();
 }
 int SSLClientSocket::receive(char* buff,const int length){
-	int read;
+	int read=length;
 	while(read>=length){
 		read=BIO_read(bio, buff,length);
 		if(read==0){
