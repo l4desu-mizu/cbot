@@ -51,18 +51,24 @@ void SSLClientSocket::initSSLSocket(const std::string& hostname, const int& port
 
 	//supply your own certs
 	if(certFile.size()>0&&certKeyFile.size()>0){
-		int use_cert;
-		int use_key;
+		bool use_cert_err;
+		bool use_key_err;
 
-		use_cert = SSL_CTX_use_certificate_file(sslContext, certFile.c_str(), SSL_FILETYPE_PEM);
-		use_key = SSL_CTX_use_PrivateKey_file(sslContext, certKeyFile.c_str(), SSL_FILETYPE_PEM);
-		if(use_cert!=1){
+		use_cer_errt = (SSL_CTX_use_certificate_file(sslContext, certFile.c_str(), SSL_FILETYPE_PEM)!=1);
+		use_key_err = (SSL_CTX_use_PrivateKey_file(sslContext, certKeyFile.c_str(), SSL_FILETYPE_PEM)!=1);
+
+		if(use_cert_err||use_key_err){
 			//ERROR
-			std::clog << "use_cert error" << std::endl;
-		}
-		if(use_key!=1){
-			//ERROR
-			std::clog << "use_key error" << std::endl;
+			std::stringstream builder;
+			builder << "Your";
+			if(use_cert_err){
+				builder << " certificate file (path) is erroneous.";
+			}else if(use_key_err){
+				builder << " certificate key file (path) is erroneous.";
+			}else{
+				builder << " the given cert file (paths) are erroneous."
+			}
+			throw std::runtime_error(builder.str());
 		}
 	}
 	bio=BIO_new_ssl_connect(sslContext);
