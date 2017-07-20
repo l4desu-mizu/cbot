@@ -2,6 +2,8 @@
 
 enum ConnectionEvent{
 	Connect,
+	Kick,
+	Ban,
 	Disconnect
 };
 class ConnectionListener{
