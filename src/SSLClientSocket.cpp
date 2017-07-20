@@ -54,7 +54,7 @@ void SSLClientSocket::initSSLSocket(const std::string& hostname, const int& port
 		bool use_cert_err;
 		bool use_key_err;
 
-		use_cer_errt = (SSL_CTX_use_certificate_file(sslContext, certFile.c_str(), SSL_FILETYPE_PEM)!=1);
+		use_cert_err = (SSL_CTX_use_certificate_file(sslContext, certFile.c_str(), SSL_FILETYPE_PEM)!=1);
 		use_key_err = (SSL_CTX_use_PrivateKey_file(sslContext, certKeyFile.c_str(), SSL_FILETYPE_PEM)!=1);
 
 		if(use_cert_err||use_key_err){
@@ -66,7 +66,7 @@ void SSLClientSocket::initSSLSocket(const std::string& hostname, const int& port
 			}else if(use_key_err){
 				builder << " certificate key file (path) is erroneous.";
 			}else{
-				builder << " the given cert file (paths) are erroneous."
+				builder << " the given cert file (paths) are erroneous.";
 			}
 			throw std::runtime_error(builder.str());
 		}
