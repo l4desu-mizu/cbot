@@ -17,6 +17,7 @@
 
 //ini keys
 #define USERNAME_KEY "username"
+#define PASSWORD_KEY "password"
 #define SERVER_KEY "server"
 #define PORT_KEY "port"
 #define CERTFILE_KEY "certificate"
@@ -27,6 +28,7 @@
 struct BotInfo{
 	std::string type;
 	std::string username;
+	std::string password;
 	std::string server;
 	int port;
 	std::string certFile;
@@ -60,6 +62,7 @@ void readBotInfo(dictionary* ini, BotInfo& bot){
 	//construct full keys section:key
 	const std::string username_key=bot.type+":"+USERNAME_KEY;
 	const std::string server_key=bot.type+":"+SERVER_KEY;
+	const std::string password_key=bot.type+":"+PASSWORD_KEY;
 	const std::string port_key=bot.type+":"+PORT_KEY;
 	const std::string certFile_key=bot.type+":"+CERTFILE_KEY;
 	const std::string certKey_key=bot.type+":"+CERTKEYFILE_KEY;
@@ -69,6 +72,7 @@ void readBotInfo(dictionary* ini, BotInfo& bot){
 	//fill botinfo with new or old data if failing
 	bot.username=iniparser_getstring(ini,username_key.c_str(),bot.username.c_str());
 	bot.server=iniparser_getstring(ini,server_key.c_str(),bot.server.c_str());
+	bot.password=iniparser_getstring(ini,password_key.c_str(),"");
 	bot.port=iniparser_getint(ini,port_key.c_str(),bot.port);
 	bot.certFile=iniparser_getstring(ini,certFile_key.c_str(),"");
 	bot.certKey=iniparser_getstring(ini,certKey_key.c_str(),"");
@@ -111,7 +115,7 @@ int main(int argc,char** argv){
 	try{
 		//create bot with given botInfo
 		mySocket = new SSLClientSocket(botInfo.server,botInfo.port,botInfo.certFile,botInfo.certKey);
-		connector = new MumbleConnector(mySocket,botInfo.username);
+		connector = new MumbleConnector(mySocket,botInfo.username,botInfo.password);
 		if(botInfo.type==HTTP_MUMBLE_BOT){
 			bot = new HttpMumbleBot(connector,botInfo.script,botInfo.channel);
 		}else{
