@@ -293,7 +293,7 @@ void MumbleConnector::handle(const MumbleProto::UserRemove& userRemoveMsg){
 	std::clog<< "UserRemove" <<std::endl;
 	if(userRemoveMsg.session()==sessionID){
 		sessionID=-1;
-		if(userRemoveMsg.has_ban()){
+		if(userRemoveMsg.has_ban()&&userRemoveMsg.ban()){
 			notifyListeners(ConnectionEvent::Ban);
 		}else{
 			notifyListeners(ConnectionEvent::Kick);
