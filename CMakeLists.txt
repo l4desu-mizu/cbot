@@ -19,6 +19,10 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 
+#curl
+find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIR})
+
 file(GLOB PROTO_FILES ${PROTOBUF_DEFS})
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HS ${PROTO_FILES})
 SET_SOURCE_FILES_PROPERTIES(${PROTO_SRCS} ${PROTO_HS} PROPERTIES GENERATED TRUE)#forces to generate them before compiling?
@@ -35,6 +39,7 @@ SET(BASE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Entities.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SimpleMumbleBot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/extensions/http/HttpRelayBot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/SimpleList.hpp
 )
 
@@ -43,4 +48,4 @@ add_executable(cbot ${BASE_SRC})
 set(EXECUTABLE_OUTPUT_PATH ./bin)
 
 #linking
-target_link_libraries(cbot ${OPENSSL_LIBRARIES} "-pthread" ${PROTOBUF_LIBRARY})
+target_link_libraries(cbot ${OPENSSL_LIBRARIES} "-pthread" ${PROTOBUF_LIBRARY} ${CURL_LIBRARIES})
