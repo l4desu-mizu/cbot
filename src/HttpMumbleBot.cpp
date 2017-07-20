@@ -4,7 +4,11 @@
 HttpMumbleBot::HttpMumbleBot(Connector* connection, std::string url, std::string prefferedChannel):
 Bot(connection),
 prefferedChannel(prefferedChannel){
-	relay=new HttpRelay(url);
+	if(url.size()>0){
+		relay=new HttpRelay(url);
+	}else{
+		throw std::runtime_error("No url provided!");
+	}
 }
 HttpMumbleBot::~HttpMumbleBot(){
 	if(relay!=NULL){
