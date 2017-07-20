@@ -12,8 +12,11 @@ Bot::Bot(Connector* connection):connection(connection){
 Bot::~Bot(){
 }
 void Bot::notify(const Text& text){
+	Text localText=text;
+	updateData(&localText.from);
+	updateData(&localText.to);
 	std::lock_guard<std::mutex> lock(textingMutex);
-	receivedTexts.push(text);
+	receivedTexts.push(localText);
 }
 void Bot::notify(const Entity& e){
 	if(e.getType()==EntityType::Channel_type){
@@ -58,4 +61,28 @@ void Bot::run(){
 void Bot::clearQueue(){
 	std::queue<Text> empty;
 	std::swap(receivedTexts,empty);
+}
+
+void Bot::updateData(Entity* ent){
+	Entity* pEnt=NULL;
+	if(ent->getType()==EntityType::User_type){
+		pEnt=users.getAllocated(*ent);
+	}else if(ent->getType()==EntityType::Channel_type){
+		pEnt=channels.getAllocated(*ent);
+	}
+	if(pEnt==NULL){
+		return;
+	}
+	ent->setConcern(pEnt->getConcern());
+	ent->setName(pEnt->getName());
+}
+User Bot::getUserData(const int id){
+	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&users);
+	User user=*ents->getAllocated(id);
+	return user;
+}
+Channel Bot::getChannelData(const int id){
+	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&channels);
+	Channel channel=*ents->getAllocated(id);
+	return channel;
 }
