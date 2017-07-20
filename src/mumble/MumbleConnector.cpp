@@ -286,12 +286,16 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 void MumbleConnector::handle(const MumbleProto::TextMessage& textMsg){
 	std::clog<< "TextMessage" <<std::endl;
 	int fromID;
+	bool isPrivate=false;
 	if(!textMsg.has_actor()||textMsg.actor()==sessionID){//murmur does not send own messages to channels back, yet security
 		return;
 	}else{
 		fromID=textMsg.actor();
 	}
-	Text text={textMsg.message(),User(fromID,""),User(sessionID,username)};
+	if(textMsg.channel_id_size()<1){//if the text message does not have at least one channel, it's a private message
+		isPrivate=true;
+	}
+	Text text={textMsg.message(),User(fromID,""),User(sessionID,username),isPrivate};
 	notifyListeners(text);
 }
 void MumbleConnector::handle(const MumbleProto::PermissionDenied& deniedMsg){
