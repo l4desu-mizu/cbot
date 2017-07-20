@@ -10,7 +10,7 @@
 #include <queue>
 #include <atomic>
 
-class Bot: public ConnectionListener,TextListener,EntityListener, IBot{
+class Bot: public ConnectionListener,public TextListener,public EntityListener,public IBot{
 	public:
 		Bot(Connector* connection);
 		~Bot();
