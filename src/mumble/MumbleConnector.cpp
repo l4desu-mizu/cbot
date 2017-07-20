@@ -287,7 +287,7 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 		std::string name="";
 		if(stateMsg.has_name()){
 			name=stateMsg.name();
-			if(sessionID!=-1&&name==username){
+			if(sessionID==-1&&name==username){
 				sessionID=userID;//TODO check for registered user_id so a name change can be observerd
 			}
 		}
