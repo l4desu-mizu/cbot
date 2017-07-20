@@ -5,7 +5,8 @@
 
 SSLClientSocket::SSLClientSocket(std::string hostname, int port, bool useEncrypt):
 certFile(""),
-certKeyFile(""){
+certKeyFile(""),
+isNonBlocking(false){
 	if(useEncrypt){
 		initSSLSocket(hostname,port);
 	}else{
@@ -24,7 +25,8 @@ certKeyFile(""){
 
 SSLClientSocket::SSLClientSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile):
 certFile(certFile),
-certKeyFile(certKeyFile){
+certKeyFile(certKeyFile),
+isNonBlocking(false){
 	initSSLSocket(hostname,port);
 }
 
@@ -68,6 +70,8 @@ void SSLClientSocket::initSSLSocket(const std::string& hostname, const int& port
 		}
 	}
 	bio=BIO_new_ssl_connect(sslContext);
+	BIO_set_close(bio,BIO_CLOSE); //BIO should be closed when freed
+	BIO_set_nbio(bio,isNonBlocking); //set socket to blocking
 	BIO_get_ssl(bio, &ssl);
 	SSL_set_mode(ssl,SSL_MODE_AUTO_RETRY);
 	BIO_set_conn_hostname(bio,createTargetHost(hostname,port).c_str());
@@ -127,6 +131,9 @@ std::string SSLClientSocket::receive(){
 		}else if(read==0){
 			//No data or closed
 			std::clog << "no data read or socket closed" << std::endl;
+			if(!isNonBlocking){
+				throw std::runtime_error("Socket closed");
+			}
 		}else{
 			//ERROR occured
 			std::clog << "some reading error, trying again" << std::endl;
@@ -147,6 +154,9 @@ int SSLClientSocket::receive(char* buff,const int length){
 		if(read==0){
 			//No data or closed
 			std::clog << "no data read or socket closed" << std::endl;
+			if(!isNonBlocking){
+				throw std::runtime_error("Socket closed");
+			}
 		}else if(read<0){
 			//ERROR occured
 			std::clog << "some reading error, trying again" << std::endl;

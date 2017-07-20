@@ -13,6 +13,7 @@ class SSLClientSocket{
 		std::string receive();
 		int receive(char* buff,const int length);
 	private:
+		const bool isNonBlocking;
 		const std::string certFile;
 		const std::string certKeyFile;
 		BIO* bio;
