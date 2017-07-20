@@ -5,9 +5,10 @@
 
 class HttpRelay:public TextExtension{
 	public:
-		HttpRelay();
+		HttpRelay(const std::string url);
 		~HttpRelay();
 		Text relayMessage(const Text& text);
 	private:
 		CURL* curl=NULL;
+		const std::string url;
 };
