@@ -1,6 +1,7 @@
 #pragma once
 #include "EntityListener.h"
 #include "TextListener.h"
+#include "ConnectionListener.h"
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@ class Connector{
 		virtual void sendTextMessage(const std::string& message)=0;
 		virtual void whisperTextMessage(const std::vector<User>& users, const std::string& message)=0;
 		virtual void whisperTextMessage(const std::vector<Channel>& channels, const std::string& message)=0;
+		virtual void addConnectionListener(ConnectionListener* l)=0;
 		virtual void addChannelListener(EntityListener* l)=0;
 		virtual void addUserListener(EntityListener* l)=0;
 		virtual void addTextListener(TextListener* l)=0;
