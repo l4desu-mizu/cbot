@@ -6,4 +6,5 @@ struct Text{
 	std::string message;
 	Entity from;
 	Entity to;
+	bool isPrivate=false;
 };
