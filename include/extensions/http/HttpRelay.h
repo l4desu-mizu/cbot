@@ -10,5 +10,4 @@ class HttpRelay:public TextExtension{
 		Text relayMessage(const Text& text);
 	private:
 		CURL* curl=NULL;
-		const std::string url;
 };

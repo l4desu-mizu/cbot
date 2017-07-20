@@ -7,7 +7,7 @@ static size_t httpCallback(void *contents, size_t size, size_t nmemb, void *user
 	return size * nmemb;
 };
 
-HttpRelay::HttpRelay(const std::string url):url(url){
+HttpRelay::HttpRelay(const std::string url){
 	curl=curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &httpCallback);
