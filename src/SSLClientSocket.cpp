@@ -131,9 +131,6 @@ std::string SSLClientSocket::receive(){
 		}else if(read==0){
 			//No data or closed
 			std::clog << "no data read or socket closed" << std::endl;
-			if(!isNonBlocking){
-				throw std::runtime_error("Socket closed");
-			}
 		}else{
 			//ERROR occured
 			std::clog << "some reading error, trying again" << std::endl;
@@ -154,9 +151,6 @@ int SSLClientSocket::receive(char* buff,const int length){
 		if(read==0){
 			//No data or closed
 			std::clog << "no data read or socket closed" << std::endl;
-			if(!isNonBlocking){
-				throw std::runtime_error("Socket closed");
-			}
 		}else if(read<0){
 			//ERROR occured
 			std::clog << "some reading error, trying again" << std::endl;
