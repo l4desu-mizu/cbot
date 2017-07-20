@@ -4,11 +4,12 @@
 
 class SimpleMumbleBot:public Bot{
 	public:
-		SimpleMumbleBot(Connector* connection);
+		SimpleMumbleBot(Connector* connection, const std::string channel="");
 		~SimpleMumbleBot();
 		void preRun();
 	protected:
 		bool respond(const Text& text);
 	private:
+		const std::string prefferedChannel;
 		std::string getTime();
 };

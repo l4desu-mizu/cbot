@@ -2,19 +2,19 @@
 #include <iostream>
 #include <ctime>
 
-SimpleMumbleBot::SimpleMumbleBot(Connector* connection):Bot(connection){
+SimpleMumbleBot::SimpleMumbleBot(Connector* connection,const std::string channel):Bot(connection),prefferedChannel(channel){
 }
 SimpleMumbleBot::~SimpleMumbleBot(){
 }
 void SimpleMumbleBot::preRun(){
 	Bot::preRun();
-	const std::string channel="SomeChannel";
-	std::cout << "moving to " << channel << std::endl;
 	std::vector<Channel> chan=channels.getCurrent();
-	for(auto it=chan.begin();it!=chan.end();it++){
-		if(it->getName()==channel){
-			connection->moveToTextChat(*it);
-			break;
+	if(prefferedChannel.size()>0){
+		for(auto it=chan.begin();it!=chan.end();it++){
+			if(it->getName()==prefferedChannel){
+				connection->moveToTextChat(*it);
+				break;
+			}
 		}
 	}
 	const std::string greetings="Greetings!";
