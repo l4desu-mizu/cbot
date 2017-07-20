@@ -21,6 +21,7 @@ MumbleConnector::~MumbleConnector(){
 }
 
 void MumbleConnector::connect(){
+	socket->connect();
 	serverSyncd=false;
 	receiveLoopRuns=true;
 	receiveThread=std::thread(&MumbleConnector::handleReceives,this);
@@ -43,6 +44,7 @@ void MumbleConnector::disconnect(){
 	receiveThread.join();
 	ping=false;
 	pingThread.join();
+	socket->disconnect();
 }
 
 void MumbleConnector::updateUserInfo(const User& user){

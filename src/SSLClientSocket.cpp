@@ -17,7 +17,6 @@ isNonBlocking(false){
 				//ERROR
 		}
 	}
-	connect();
 }
 
 SSLClientSocket::SSLClientSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile):
@@ -25,7 +24,6 @@ certFile(certFile),
 certKeyFile(certKeyFile),
 isNonBlocking(false){
 	initSSLSocket(hostname,port);
-	connect();
 }
 
 SSLClientSocket::~SSLClientSocket(){
@@ -34,7 +32,7 @@ SSLClientSocket::~SSLClientSocket(){
 		sslContext=NULL;
 	}
 	if(bio!=NULL){
-		BIO_free_all(bio);
+		BIO_free_all(bio);//frees ssl
 		bio=NULL;
 	}
 }
