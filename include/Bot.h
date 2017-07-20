@@ -34,6 +34,7 @@ class Bot: public ConnectionListener,TextListener,EntityListener, IBot{
 		std::mutex channelLock;
 		User* me=NULL;
 		Channel* currentChannel=NULL;
+		void reconnect();
 		virtual bool respond(const Text& text)=0;
 		User getUserData(const int id);
 		Channel getChannelData(const int id);

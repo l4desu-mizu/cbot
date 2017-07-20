@@ -31,11 +31,6 @@ void Bot::notify(const ConnectionEvent e){
 			currentChannel=NULL;
 			clearQueue();
 	}
-
-	if(e==ConnectionEvent::Disconnect||e==ConnectionEvent::Kick){
-	}else if(e==ConnectionEvent::Ban){
-	}else if(e==ConnectionEvent::Connect){
-	}
 }
 void Bot::notify(const Text& text){
 	Text localText=text;
@@ -75,7 +70,8 @@ void Bot::run(){
 	if(die){
 		throw std::runtime_error("They dun want meh QQ");
 	}
-	if(!connected){//skip if not connected
+	if(!connected){//skip if connected
+		reconnect();
 		return;
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -92,6 +88,17 @@ void Bot::run(){
 	}
 }
 
+void Bot::reconnect(){
+	connection->disconnect();
+	try{
+		connection->connect();
+	}catch(std::runtime_error& e){
+		connection->disconnect();
+		die=true;
+		throw e;
+	}
+	preRun();//"reinit"
+}
 User Bot::getUserData(const int id){
 	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&users);
 	User user=*ents->getAllocated(id);
