@@ -39,6 +39,7 @@ SET(BASE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Entities.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SimpleMumbleBot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/HttpMumbleBot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/extensions/http/HttpRelay.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/SimpleList.hpp
 )
