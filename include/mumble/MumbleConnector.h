@@ -4,6 +4,7 @@
 #include "SSLClientSocket.h"
 #include "TextListener.h"
 #include "EntityListener.h"
+#include "ConnectionListener.h"
 #include <thread>
 #include <iostream>
 #include <mutex>
@@ -70,6 +71,7 @@ class MumbleConnector: public Connector{
 		void whisperTextMessage(const std::vector<User>& users, const std::string& message);
 		void whisperTextMessage(const std::vector<Channel>& channels, const std::string& message);
 
+		void addConnectionListener(ConnectionListener* l);
 		void addChannelListener(EntityListener* l);
 		void addUserListener(EntityListener* l);
 		void addTextListener(TextListener* l);
@@ -79,6 +81,8 @@ class MumbleConnector: public Connector{
 		bool serverSyncd=false;
 		int channelID=-1;
 		int sessionID=-1;//TODO: the connector (sadly) needs to keep track of the users and channels
+		std::mutex connectionListenerMutex;
+		std::vector<ConnectionListener*> connectionListeners;
 		std::mutex channelListenerMutex;
 		std::vector<EntityListener*> channelListeners;
 		std::mutex userListenerMutex;
@@ -101,6 +105,7 @@ class MumbleConnector: public Connector{
 
 		void pingLoop();
 
+		void notifyListeners(const ConnectionEvent& event);
 		void notifyListeners(const Text& text);
 		void notifyListeners(const Entity& ent);
 		void unnotifyListeners(const int id, const EntityType type);

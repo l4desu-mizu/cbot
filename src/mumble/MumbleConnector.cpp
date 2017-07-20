@@ -82,6 +82,10 @@ void MumbleConnector::moveToTextChat(const Entity& channel){
 	sendProtoMessage(MumbleMessageType::UserState, stateChange);
 }
 
+void MumbleConnector::addConnectionListener(ConnectionListener* l){
+	std::lock_guard<std::mutex> lock(connectionListenerMutex);
+	connectionListeners.push_back(l);
+}
 
 void MumbleConnector::addChannelListener(EntityListener* l){
 	std::lock_guard<std::mutex> lock(channelListenerMutex);
@@ -187,6 +191,13 @@ void MumbleConnector::pingLoop(){
 	}
 }
 
+void MumbleConnector::notifyListeners(const ConnectionEvent& event){
+	std::lock_guard<std::mutex> lock(connectionListenerMutex);
+	for(ConnectionListener* l:connectionListeners){
+		l->notify(event);
+	}
+}
+
 void MumbleConnector::notifyListeners(const Text& text){
 	std::lock_guard<std::mutex> lock(textListenerMutex);
 	for(TextListener* l:textListeners){
@@ -235,6 +246,7 @@ void MumbleConnector::handle(const MumbleProto::Reject& rejectMsg){
 void MumbleConnector::handle(const MumbleProto::ServerSync& syncMsg){
 	std::clog<< "ServerSync" <<std::endl;
 	serverSyncd=true;
+	notifyListeners(ConnectionEvent::Connect);
 }
 void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	std::clog<< "ChannelState" <<std::endl;
@@ -275,7 +287,7 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 		std::string name="";
 		if(stateMsg.has_name()){
 			name=stateMsg.name();
-			if(name==username){
+			if(sessionID!=-1&&name==username){
 				sessionID=userID;//TODO check for registered user_id so a name change can be observerd
 			}
 		}
@@ -334,7 +346,12 @@ void MumbleConnector::handle(const MumbleProto::VoiceTarget& voiceMsg){
 }
 void MumbleConnector::handle(const MumbleProto::UserRemove& userRemoveMsg){
 	std::clog<< "UserRemove" <<std::endl;
-	unnotifyListeners(userRemoveMsg.session(),EntityType::User_type);
+	if(userRemoveMsg.session()==sessionID){
+		sessionID=-1;
+		notifyListeners(ConnectionEvent::Disconnect);
+	}else{
+		unnotifyListeners(userRemoveMsg.session(),EntityType::User_type);
+	}
 }
 void MumbleConnector::handle(const MumbleProto::BanList& banMsg){
 	/*irrelevant*/ std::clog<< "BanList" <<std::endl;
