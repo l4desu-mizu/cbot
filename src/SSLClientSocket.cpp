@@ -16,11 +16,8 @@ isNonBlocking(false){
 		if(bio==NULL){
 				//ERROR
 		}
-		//connect with handshake
-		if(BIO_do_connect(bio)<=0){
-				//ERROR
-		}
 	}
+	connect();
 }
 
 SSLClientSocket::SSLClientSocket(std::string hostname, int port, std::string certFile, std::string certKeyFile):
@@ -28,6 +25,7 @@ certFile(certFile),
 certKeyFile(certKeyFile),
 isNonBlocking(false){
 	initSSLSocket(hostname,port);
+	connect();
 }
 
 SSLClientSocket::~SSLClientSocket(){
@@ -95,6 +93,10 @@ std::string SSLClientSocket::createTargetHost(const std::string& host,const int&
 	return targetHost.str();
 }
 
+bool SSLClientSocket::connect(){
+	//connect with handshake
+	return (BIO_do_connect(bio)>0);
+}
 void SSLClientSocket::disconnect(){
 	BIO_reset(bio);
 }
