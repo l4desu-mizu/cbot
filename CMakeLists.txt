@@ -28,7 +28,7 @@ find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 
 #iniparser (for config)
-find_package(CURL REQUIRED)
+find_package(Iniparser REQUIRED)
 include_directories(${INIPARSER_INCLUDE_DIR})
 
 #generate protobuf files
