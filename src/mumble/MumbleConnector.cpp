@@ -40,11 +40,11 @@ void MumbleConnector::connect(){
 }
 void MumbleConnector::disconnect(){
 	serverSyncd=false;
+	socket->disconnect();
 	receiveLoopRuns=false;
 	receiveThread.join();
 	ping=false;
 	pingThread.join();
-	socket->disconnect();
 }
 
 void MumbleConnector::updateUserInfo(const User& user){
