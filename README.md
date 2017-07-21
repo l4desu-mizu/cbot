@@ -2,7 +2,7 @@
 
 Yet another chat bot...
 (Ideally) Designed to be extensible and connect to different services:
-	- Mumble
+ - Mumble
 
 DAYMN! What a List I got there!
 
@@ -18,7 +18,7 @@ After that the only thing he will react to is "time" printing his current time..
 The HttpMumbleBot uses an extern Http server, sends the messages he receives there and responds with the answer he gets...
 This Bot uses Post messaging in the form:
 
-``command=[some message]&username=[user the message came from]&private_message=[bool to check if it was private or channel message]``
+``command=[some message]&username=[from user]&private_message=[private or channel?]``
 
 (Wasn't my idea but hey you see we might be able to plug this thing into anything!)
 
