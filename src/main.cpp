@@ -2,8 +2,9 @@
 #include "SimpleMumbleBot.h"
 #include "HttpMumbleBot.h"
 #include "mumble/MumbleConnector.h"
-#include <iniparser.h>
+#include <libconfig.h++>
 #include <string>
+#include <vector>
 #include <iostream>
 #include <exception>
 
@@ -12,10 +13,12 @@
 #define DEFAULT_SERVER "localhost"
 #define INI_NAME "example.ini"
 
-#define SIMPLE_MUMBLE_BOT "simplemumblebot"
-#define HTTP_MUMBLE_BOT "httpmumblebot"
+#define SIMPLE_MUMBLE_BOT "SimpleMumbleBot"
+#define HTTP_MUMBLE_BOT "HttpMumbleBot"
 
 //ini keys
+#define TYPE_KEY "type"
+#define CONNECTOR_KEY "connector"
 #define USERNAME_KEY "username"
 #define PASSWORD_KEY "password"
 #define SERVER_KEY "server"
@@ -41,46 +44,57 @@ struct BotInfo{
 bool runBot=false;
 
 //{{{ config read begin
-void readBotInfo(dictionary* ini, BotInfo& bot){
-	//check if any configurations were made
-	int botcount=iniparser_getnsec(ini);
-	if(botcount<1){
-		throw std::runtime_error("No bot specified.");
-	}else if(botcount>1){
-		std::cout << "Only creating one bot." << std::endl;
+std::vector<BotInfo> readBotInfo(libconfig::Config& ini, const BotInfo& templateInfo={SIMPLE_MUMBLE_BOT,DEFAULT_USERNAME,"",DEFAULT_SERVER,DEFAULT_MUMBLE_PORT,"","","",""}){
+	std::vector<BotInfo> botInfos;
+	libconfig::Setting& set=ini.getRoot();
+
+	for(auto configIt=set.begin();configIt!=set.end();configIt++){
+		if(configIt->isGroup()){
+			BotInfo currentInfo=templateInfo;
+			for(auto groupIt=configIt->begin();groupIt!=configIt->end();groupIt++){
+				std::string currentName(groupIt->getName());
+
+				if(currentName==USERNAME_KEY&&groupIt->getType()==libconfig::Setting::Type::TypeString){
+					currentInfo.username=set.lookup(groupIt->getPath()).c_str();
+				}else if(currentName==PASSWORD_KEY&&groupIt->getType()==libconfig::Setting::Type::TypeString){
+					currentInfo.password=set.lookup(groupIt->getPath()).c_str();
+				}else if(currentName==CHANNEL_KEY&&groupIt->getType()==libconfig::Setting::Type::TypeString){
+					currentInfo.channel=set.lookup(groupIt->getPath()).c_str();
+				}else if(currentName==SCRIPT_KEY&&groupIt->getType()==libconfig::Setting::Type::TypeString){
+					currentInfo.script=set.lookup(groupIt->getPath()).c_str();
+				}else if(currentName==CERTFILE_KEY&&groupIt->getType()==libconfig::Setting::Type::TypeString){
+					currentInfo.certFile=set.lookup(groupIt->getPath()).c_str();
+				}else if(currentName==CERTKEYFILE_KEY&&groupIt->getType()==libconfig::Setting::Type::TypeString){
+					currentInfo.certKey=set.lookup(groupIt->getPath()).c_str();
+				}else if(currentName==CONNECTOR_KEY&&groupIt->isGroup()){
+					//read connector, with server,port and bot type
+					try{//try reading server, set default if wrong type or empty
+						currentInfo.server=set.lookup(groupIt->getPath()+"."+SERVER_KEY).c_str();
+					}catch(libconfig::ConfigException& e){
+						std::cout << "Your config seems wrong. " << e.what() << std::endl;
+						std::cout << "Setting default server." << std::endl;
+						currentInfo.server=DEFAULT_SERVER;
+					}
+					try{//try reading port, set default if wrong type or empty
+						currentInfo.port=set.lookup(groupIt->getPath()+"."+PORT_KEY);
+					}catch(libconfig::ConfigException& e){
+						std::cout << "Your config seems wrong. " << e.what() << std::endl;
+						std::cout << "Setting default port." << std::endl;
+						currentInfo.port=DEFAULT_MUMBLE_PORT;
+					}
+					try{//try reading type, set default if wrong type or empty
+						currentInfo.type=set.lookup(groupIt->getPath()+"."+TYPE_KEY).c_str();
+					}catch(libconfig::ConfigException& e){
+						std::cout << "Your config seems wrong. " << e.what() << std::endl;
+						std::cout << "Setting default type." << std::endl;
+						currentInfo.type=SIMPLE_MUMBLE_BOT;
+					}
+				}
+			}
+			botInfos.push_back(currentInfo);
+		}
 	}
-
-	bot.type=iniparser_getsecname(ini,0);
-	if(bot.type!=HTTP_MUMBLE_BOT&&bot.type!=SIMPLE_MUMBLE_BOT){
-		std::cout << bot.type << std::endl;
-		throw std::runtime_error("Dont know this bot.");
-	}
-
-	int keycount=iniparser_getsecnkeys(ini,bot.type.c_str());
-
-	//allocate memory for keys and get them
-	const char* keys[keycount];
-	iniparser_getseckeys(ini,bot.type.c_str(),keys);
-
-	//construct full keys section:key
-	const std::string username_key=bot.type+":"+USERNAME_KEY;
-	const std::string server_key=bot.type+":"+SERVER_KEY;
-	const std::string password_key=bot.type+":"+PASSWORD_KEY;
-	const std::string port_key=bot.type+":"+PORT_KEY;
-	const std::string certFile_key=bot.type+":"+CERTFILE_KEY;
-	const std::string certKey_key=bot.type+":"+CERTKEYFILE_KEY;
-	const std::string channel_key=bot.type+":"+CHANNEL_KEY;
-	const std::string script_key=bot.type+":"+SCRIPT_KEY;
-
-	//fill botinfo with new or old data if failing
-	bot.username=iniparser_getstring(ini,username_key.c_str(),bot.username.c_str());
-	bot.server=iniparser_getstring(ini,server_key.c_str(),bot.server.c_str());
-	bot.password=iniparser_getstring(ini,password_key.c_str(),"");
-	bot.port=iniparser_getint(ini,port_key.c_str(),bot.port);
-	bot.certFile=iniparser_getstring(ini,certFile_key.c_str(),"");
-	bot.certKey=iniparser_getstring(ini,certKey_key.c_str(),"");
-	bot.channel=iniparser_getstring(ini,channel_key.c_str(),"");
-	bot.script=iniparser_getstring(ini,script_key.c_str(),"");
+	return botInfos;
 }
 //}}} config read end
 
@@ -91,28 +105,27 @@ void stopBotLoop(int signal){
 int main(int argc,char** argv){
 
 	//read ini file
-	dictionary* ini=NULL;
-	if(argc>1){//argv[0] is the binary itself
-		ini=iniparser_load(argv[1]);
-	}else{
-		std::cout << "Using default ini-File: " << INI_NAME << std::endl;
-		ini=iniparser_load(INI_NAME);
-	}
-	if(ini==NULL){
+	libconfig::Config ini;
+	try{
+		if(argc>1){//argv[0] is the binary itself
+			ini.readFile(argv[1]);
+		}else{
+			std::cout << "Using default ini-File: " << INI_NAME << std::endl;
+			ini.readFile(INI_NAME);
+		}
+	}catch(libconfig::ParseException& exceptio){
 		std::cout << "Something wrong with the ini file." << std::endl;
-		iniparser_freedict(ini);
 		return 1;
 	}
 
 	//config: fill botInfo with default values
 	BotInfo botInfo;
-	botInfo.type=SIMPLE_MUMBLE_BOT;
-	botInfo.username=DEFAULT_USERNAME;
-	botInfo.server=DEFAULT_SERVER;
-	botInfo.port=DEFAULT_MUMBLE_PORT;
 	try{
-		readBotInfo(ini,botInfo);
-		iniparser_freedict(ini);//final use of ini
+		std::vector<BotInfo> infos=readBotInfo(ini);
+		if(infos.size()<1){
+			throw std::runtime_error("No configuration found in configuration file");
+		}
+		botInfo=infos[0];
 	}catch(std::runtime_error& e){
 		std::cout << e.what() << std::endl;
 		return 1;
