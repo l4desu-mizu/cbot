@@ -257,7 +257,7 @@ void MumbleConnector::handle(const MumbleProto::TextMessage& textMsg){
 	if(textMsg.channel_id_size()<1){//if the text message does not have at least one channel, it's a private message
 		isPrivate=true;
 	}
-	Text text={textMsg.message(),User(fromID,""),User(sessionID,username),isPrivate};
+	Text text(textMsg.message(),User(fromID,""),User(sessionID,username),isPrivate);
 	notifyListeners(text);
 }
 void MumbleConnector::handle(const MumbleProto::PermissionDenied& deniedMsg){
