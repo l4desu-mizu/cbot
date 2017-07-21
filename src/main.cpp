@@ -11,12 +11,12 @@
 #define DEFAULT_MUMBLE_PORT 64738
 #define DEFAULT_USERNAME "cbot"
 #define DEFAULT_SERVER "localhost"
-#define INI_NAME "example.ini"
+#define INI_NAME "example.cfg"
 
 #define SIMPLE_MUMBLE_BOT "SimpleMumbleBot"
 #define HTTP_MUMBLE_BOT "HttpMumbleBot"
 
-//ini keys
+//cfg keys
 #define TYPE_KEY "type"
 #define CONNECTOR_KEY "connector"
 #define USERNAME_KEY "username"
@@ -44,9 +44,9 @@ struct BotInfo{
 bool runBot=false;
 
 //{{{ config read begin
-std::vector<BotInfo> readBotInfo(libconfig::Config& ini, const BotInfo& templateInfo={SIMPLE_MUMBLE_BOT,DEFAULT_USERNAME,"",DEFAULT_SERVER,DEFAULT_MUMBLE_PORT,"","","",""}){
+std::vector<BotInfo> readBotInfo(libconfig::Config& cfg, const BotInfo& templateInfo={SIMPLE_MUMBLE_BOT,DEFAULT_USERNAME,"",DEFAULT_SERVER,DEFAULT_MUMBLE_PORT,"","","",""}){
 	std::vector<BotInfo> botInfos;
-	libconfig::Setting& set=ini.getRoot();
+	libconfig::Setting& set=cfg.getRoot();
 
 	for(auto configIt=set.begin();configIt!=set.end();configIt++){
 		if(configIt->isGroup()){
@@ -104,24 +104,24 @@ void stopBotLoop(int signal){
 
 int main(int argc,char** argv){
 
-	//read ini file
-	libconfig::Config ini;
+	//read cfg file
+	libconfig::Config cfg;
 	try{
 		if(argc>1){//argv[0] is the binary itself
-			ini.readFile(argv[1]);
+			cfg.readFile(argv[1]);
 		}else{
-			std::cout << "Using default ini-File: " << INI_NAME << std::endl;
-			ini.readFile(INI_NAME);
+			std::cout << "Using default cfg-File: " << INI_NAME << std::endl;
+			cfg.readFile(INI_NAME);
 		}
 	}catch(libconfig::ParseException& exceptio){
-		std::cout << "Something wrong with the ini file." << std::endl;
+		std::cout << "Something wrong with the cfg file." << std::endl;
 		return 1;
 	}
 
 	//config: fill botInfo with default values
 	BotInfo botInfo;
 	try{
-		std::vector<BotInfo> infos=readBotInfo(ini);
+		std::vector<BotInfo> infos=readBotInfo(cfg);
 		if(infos.size()<1){
 			throw std::runtime_error("No configuration found in configuration file");
 		}
