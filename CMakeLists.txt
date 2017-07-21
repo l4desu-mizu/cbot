@@ -27,9 +27,9 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 
-#iniparser (for config)
-find_package(Iniparser REQUIRED)
-include_directories(${INIPARSER_INCLUDE_DIR})
+#libconfig++ (for config parsing)
+find_package(LibConfig++ REQUIRED)
+include_directories(${LIBCONFIGPP_INCLUDE_DIRS})
 
 #generate protobuf files
 file(GLOB PROTO_FILES ${PROTOBUF_DEFS})
@@ -59,4 +59,4 @@ add_executable(cbot ${BASE_SRC})
 set(EXECUTABLE_OUTPUT_PATH ./bin)
 
 #linking
-target_link_libraries(cbot ${OPENSSL_LIBRARIES} "-pthread" ${PROTOBUF_LIBRARY} ${CURL_LIBRARIES} ${INIPARSER_LIBRARIES})
+target_link_libraries(cbot ${OPENSSL_LIBRARIES} "-pthread" ${PROTOBUF_LIBRARY} ${CURL_LIBRARIES} ${LIBCONFIGPP_LIBRARIES})
