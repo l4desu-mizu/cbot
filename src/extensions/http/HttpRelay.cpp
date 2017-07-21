@@ -28,7 +28,7 @@ Text HttpRelay::relayMessage(const Text& text){
 	//post message
 	queryBuilder << "command=" << text.message << "&";
 	queryBuilder << "user=" << text.from.getName() << "&";
-	queryBuilder << "private_message=" << "false" << std::flush;
+	queryBuilder << "private_message=" << text.isPrivate << std::flush;
 
 	query=queryBuilder.str();
 
