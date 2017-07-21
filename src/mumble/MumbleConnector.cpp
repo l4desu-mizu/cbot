@@ -192,6 +192,9 @@ void MumbleConnector::handle(const MumbleProto::Version& version){
 }
 void MumbleConnector::handle(const MumbleProto::Reject& rejectMsg){
 	std::clog<< "Reject" <<std::endl;
+	std::string output;
+	google::protobuf::TextFormat::PrintToString(rejectMsg,&output);
+	std::clog<< output <<std::endl;
 }
 void MumbleConnector::handle(const MumbleProto::ServerSync& syncMsg){
 	std::clog<< "ServerSync" <<std::endl;
