@@ -228,12 +228,6 @@ void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 	std::clog<< "UserState" <<std::endl;
-	//get the id of the channel this connector is currently connected to
-	if(stateMsg.has_channel_id()&&stateMsg.has_session()&&stateMsg.session()==sessionID){
-		channelID=stateMsg.channel_id();
-		const Channel newChannel(channelID,"",true);
-		notifyListeners(newChannel);
-	}
 	//update users
 	if(stateMsg.has_session()){
 		const int userID=stateMsg.session();
@@ -246,6 +240,13 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 		}
 		const User newUser(userID,name,sessionID==userID);
 		notifyListeners(newUser);
+
+		//get the id of the channel this connector is currently connected to
+		if(stateMsg.has_channel_id()&&stateMsg.session()==sessionID){
+			channelID=stateMsg.channel_id();
+			const Channel newChannel(channelID,"",true);
+			notifyListeners(newChannel);
+		}
 	}
 }
 void MumbleConnector::handle(const MumbleProto::TextMessage& textMsg){
