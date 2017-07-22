@@ -45,6 +45,9 @@ void Bot::notify(const Entity& e){
 		channels.add(c);
 		if(c.imHere()){
 			std::lock_guard<std::mutex> lock(channelLock);
+			if(currentChannel!=NULL){
+				currentChannel->setConcern(false);
+			}
 			currentChannel=channels.getAllocated(c);
 		}
 	}else if(e.getType()==EntityType::User_type){
@@ -52,6 +55,9 @@ void Bot::notify(const Entity& e){
 		users.add(u);
 		if(u.isMe()){
 			std::lock_guard<std::mutex> lock(meLock);
+			if(me!=NULL){
+				me->setConcern(false);
+			}
 			me=users.getAllocated(u);
 		}
 	}
