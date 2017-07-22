@@ -21,9 +21,9 @@ void Bot::notify(const ConnectionEvent e){
 			connected=true;
 			break;
 		case ConnectionEvent::Ban:
-			die=true;
-		case ConnectionEvent::Kick: //always do disconnect stuff
 		case ConnectionEvent::Disconnect:
+			die=true;
+		case ConnectionEvent::Kick: //always reset bot state
 			connected=false;
 			channels.clear();
 			users.clear();
