@@ -70,15 +70,15 @@ void Bot::unnotify(const Entity& e){
 	}
 }
 
-void Bot::preRun(){
+bool Bot::preRun(){
+	return true;
 }
-void Bot::run(){
+bool Bot::run(){
 	if(die){
-		throw std::runtime_error("They dun want meh QQ");
+		return false;
 	}
 	if(!connected){//skip if connected
-		reconnect();
-		return;
+		return reconnect();
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	if(lastTextQueueSize+FLOOD_WARNING<receivedTexts.size()){
@@ -92,18 +92,19 @@ void Bot::run(){
 			receivedTexts.pop();
 		}
 	}
+	return true;
 }
 
-void Bot::reconnect(){
+bool Bot::reconnect(){
 	connection->disconnect();
 	try{
 		connection->connect();
 	}catch(std::runtime_error& e){
 		connection->disconnect();
 		die=true;
-		throw e;
+		return false;
 	}
-	preRun();//"reinit"
+	return preRun();//"reinit"
 }
 User Bot::getUserData(const int id){
 	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&users);

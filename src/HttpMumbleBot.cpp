@@ -16,8 +16,8 @@ HttpMumbleBot::~HttpMumbleBot(){
 		relay=NULL;
 	}
 }
-void HttpMumbleBot::preRun(){
-	Bot::preRun();
+bool HttpMumbleBot::preRun(){
+	bool res=Bot::preRun();
 	if(prefferedChannel.size()>0){
 		std::vector<Channel> chan=channels.getCurrent();
 		for(auto it=chan.begin();it!=chan.end();it++){
@@ -27,6 +27,7 @@ void HttpMumbleBot::preRun(){
 			}
 		}
 	}
+	return res;
 }
 bool HttpMumbleBot::respond(const Text& text){
 	Text response=relay->relayMessage(text);

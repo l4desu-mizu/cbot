@@ -6,8 +6,8 @@ SimpleMumbleBot::SimpleMumbleBot(Connector* connection,const std::string channel
 }
 SimpleMumbleBot::~SimpleMumbleBot(){
 }
-void SimpleMumbleBot::preRun(){
-	Bot::preRun();
+bool SimpleMumbleBot::preRun(){
+	bool res=Bot::preRun();
 	std::vector<Channel> chan=channels.getCurrent();
 	if(prefferedChannel.size()>0){
 		for(auto it=chan.begin();it!=chan.end();it++){
@@ -22,6 +22,7 @@ void SimpleMumbleBot::preRun(){
 	const std::string friends="How are you??";
 	connection->whisperTextMessage(chan,greetings);
 	connection->whisperTextMessage(use,friends);
+	return res;
 }
 bool SimpleMumbleBot::respond(const Text& text){
 	if(text.message.find("time")!=std::string::npos){

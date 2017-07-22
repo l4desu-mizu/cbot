@@ -7,7 +7,7 @@ class HttpMumbleBot:public Bot{
 	public:
 		HttpMumbleBot(Connector* connection, std::string url, std::string prefferedChannel="");
 		~HttpMumbleBot();
-		void preRun();
+		bool preRun();
 	protected:
 		bool respond(const Text& text);
 	private:

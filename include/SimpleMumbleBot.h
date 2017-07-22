@@ -6,7 +6,7 @@ class SimpleMumbleBot:public Bot{
 	public:
 		SimpleMumbleBot(Connector* connection, const std::string channel="");
 		~SimpleMumbleBot();
-		void preRun();
+		bool preRun();
 	protected:
 		bool respond(const Text& text);
 	private:

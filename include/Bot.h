@@ -18,8 +18,8 @@ class Bot: public ConnectionListener,public TextListener,public EntityListener,p
 		void notify(const Text& text);
 		void notify(const Entity& e);
 		void unnotify(const Entity& e);
-		void preRun();
-		void run();
+		bool preRun();
+		bool run();
 	protected:
 		Connector* connection;
 		std::atomic<bool> connected;
@@ -34,7 +34,7 @@ class Bot: public ConnectionListener,public TextListener,public EntityListener,p
 		std::mutex channelLock;
 		User* me=NULL;
 		Channel* currentChannel=NULL;
-		void reconnect();
+		bool reconnect();
 		virtual bool respond(const Text& text)=0;
 		User getUserData(const int id);
 		Channel getChannelData(const int id);
