@@ -35,6 +35,9 @@ void MumbleConnector::connect(){
 		if(serverSyncd){
 			return;
 		}
+		if(!receiveLoopRuns){//socket died and receiveLoop stopped
+			break;
+		}
 	}
 	throw std::runtime_error("Connection could not be poperly established. Connection Timed out.");
 }
@@ -91,7 +94,14 @@ void MumbleConnector::moveToTextChat(const Entity& channel){
 
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){
-		const std::string tmp=(socket->receive());
+		std::string tmp;
+		try{
+			tmp=(socket->receive());
+		}catch(std::runtime_error& e){
+			notifyListeners(ConnectionEvent::Disconnect);
+			disconnect();
+			break;
+		}
 		const int inlength=tmp.size();
 		if(inlength>0){
 			std::stringstream inStream(tmp);
@@ -113,6 +123,7 @@ void MumbleConnector::handleReceives(){
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
+	receiveLoopRuns=false;
 }
 
 void MumbleConnector::connection(){
