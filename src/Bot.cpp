@@ -80,7 +80,6 @@ bool Bot::run(){
 	if(!connected){//skip if connected
 		return reconnect();
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(1));
 	if(lastTextQueueSize+FLOOD_WARNING<receivedTexts.size()){
 		lastTextQueueSize=0;
 		clearQueue();

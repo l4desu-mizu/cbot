@@ -152,6 +152,7 @@ int main(int argc,char** argv){
 		bot->preRun();
 		runBot=true;
 		while(runBot&&bot->run()){
+			std::this_thread::sleep_for(std::chrono::seconds(1));//wait a bit before running again
 		}
 	}catch(std::runtime_error& error){//catch errors in run or connection
 		std::cout << "Shutting down because: " << error.what() << std::endl;
