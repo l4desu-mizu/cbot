@@ -111,7 +111,7 @@ void MumbleConnector::handleReceives(){
 				std::thread(&MumbleConnector::dispatchMessage,this,header,msg).detach();
 			}
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(300));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
