@@ -45,9 +45,13 @@ void MumbleConnector::disconnect(){
 	serverSyncd=false;
 	socket->disconnect();
 	receiveLoopRuns=false;
-	receiveThread.join();
+	if(receiveThread.joinable()){
+		receiveThread.join();
+	}
 	ping=false;
-	pingThread.join();
+	if(pingThread.joinable()){
+		pingThread.join();
+	}
 }
 
 void MumbleConnector::updateUserInfo(const User& user){
