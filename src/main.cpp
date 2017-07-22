@@ -151,8 +151,7 @@ int main(int argc,char** argv){
 		//run the bot
 		bot->preRun();
 		runBot=true;
-		while(runBot){
-			bot->run();
+		while(runBot&&bot->run()){
 		}
 	}catch(std::runtime_error& error){//catch errors in run or connection
 		std::cout << "Shutting down because: " << error.what() << std::endl;
