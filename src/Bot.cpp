@@ -27,6 +27,8 @@ void Bot::notify(const ConnectionEvent e){
 			connected=false;
 			channels.clear();
 			users.clear();
+			std::lock_guard<std::mutex> lockMe(meLock);
+			std::lock_guard<std::mutex> lockChannel(channelLock);
 			me=NULL;
 			currentChannel=NULL;
 			clearQueue();
@@ -131,6 +133,7 @@ void Bot::updateData(Entity* ent){
 
 void Bot::clearQueue(){
 	std::queue<Text> empty;
+	std::lock_guard<std::mutex> lock(textingMutex);
 	std::swap(receivedTexts,empty);
 	lastTextQueueSize=0;
 }
