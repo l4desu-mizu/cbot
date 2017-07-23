@@ -34,6 +34,7 @@ This Bot uses Post messaging in the form:
  - libconfig (1.5 minimum)
  - openssl (1.1 I guess)
  - curl (7.52.1 minimum)
+
 Runs on Debian 9 and ArchLinux. (for me that is...)
 
 ## Download and Build
