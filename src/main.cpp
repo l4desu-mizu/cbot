@@ -157,8 +157,15 @@ int main(int argc,char** argv){
 	}catch(std::runtime_error& error){//catch errors in run or connection
 		std::cout << "Shutting down because: " << error.what() << std::endl;
 	}
-	delete bot;
-	delete connector;
-	delete mySocket;
+	std::cout << "Waiting for threads to die." << std::endl;
+	if(bot!=NULL){
+		delete bot;
+	}
+	if(connector!=NULL){
+		delete connector;
+	}
+	if(mySocket!=NULL){
+		delete mySocket;
+	}
 	return 0;
 }
