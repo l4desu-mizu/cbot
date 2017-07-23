@@ -57,6 +57,9 @@ void MumbleConnector::disconnect(){
 	if(receiveThread.joinable()){
 		receiveThread.join();
 	}
+	if(dispatchThreads>0){
+		dispatchLock.lock();
+	}
 }
 
 void MumbleConnector::updateUserInfo(const User& user){
@@ -136,7 +139,6 @@ void MumbleConnector::handleReceives(){
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	receiveLoopRuns=false;
-	dispatchLock.lock();
 }
 
 void MumbleConnector::connection(){
