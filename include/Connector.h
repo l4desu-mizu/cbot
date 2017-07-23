@@ -21,6 +21,10 @@ class Connector{
 		void addChannelListener(EntityListener* l);
 		void addUserListener(EntityListener* l);
 		void addTextListener(TextListener* l);
+		void removeConnectionListener(ConnectionListener* l);
+		void removeChannelListener(EntityListener* l);
+		void removeUserListener(EntityListener* l);
+		void removeTextListener(TextListener* l);
 	protected:
 		void notifyListeners(const ConnectionEvent& event);
 		void notifyListeners(const Text& text);
