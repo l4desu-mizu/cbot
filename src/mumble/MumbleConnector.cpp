@@ -16,7 +16,9 @@ password(password),
 serverSyncd(false),
 receiveLoopRuns(false),
 ping(false),
-dispatchThreads(0){
+dispatchThreads(0),
+channelID(0), //default channel is root=0, others are updated when moved
+sessionID(-1){
 }
 
 MumbleConnector::~MumbleConnector(){
@@ -270,8 +272,8 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 
 		//get the id of the channel this connector is currently connected to
 		if(stateMsg.has_channel_id()&&stateMsg.session()==sessionID){
-			channelID=stateMsg.channel_id();
-			const Channel newChannel(channelID,"",true);
+			this->channelID=stateMsg.channel_id();
+			const Channel newChannel(this->channelID,"",true);
 			notifyListeners(newChannel);
 		}
 	}
