@@ -1,6 +1,9 @@
+#ifdef HTTP_ENABLED
+#include "HttpMumbleBot.h"
+#endif
+
 #include "SSLClientSocket.h"
 #include "SimpleMumbleBot.h"
-#include "HttpMumbleBot.h"
 #include "mumble/MumbleConnector.h"
 #include <libconfig.h++>
 #include <string>
@@ -142,11 +145,16 @@ int main(int argc,char** argv){
 		//create bot with given botInfo
 		mySocket = new SSLClientSocket(botInfo.server,botInfo.port,botInfo.certFile,botInfo.certKey);
 		connector = new MumbleConnector(mySocket,botInfo.username,botInfo.password);
+
+#ifdef HTTP_ENABLED
 		if(botInfo.type==HTTP_MUMBLE_BOT){
 			bot = new HttpMumbleBot(connector,botInfo.script,botInfo.channel);
 		}else{
+#endif
 			bot = new SimpleMumbleBot(connector,botInfo.channel);
+#ifdef HTTP_ENABLED
 		}
+#endif
 
 		//run the bot
 		bot->preRun();
