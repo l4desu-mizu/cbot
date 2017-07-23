@@ -114,10 +114,11 @@ int SSLClientSocket::send(const char* message,const int length){
 	res=BIO_write(bio,message,length);
 	if(res<=0){
 		//ERROR
-		std::clog << "writing failed" << std::endl;
+		if(!isNonBlocking){
+			throw std::runtime_error("Socket closed unexpectedly.");
+		}
 		if(! BIO_should_retry(bio)){
 			//Handle failed write
-			std::clog << "final writing failed" << std::endl;
 			throw std::runtime_error("Socket dead.");
 		}
 	}
@@ -136,14 +137,14 @@ std::string SSLClientSocket::receive(){
 			out.write(buff,read);
 		}else if(read==0){
 			//No data or closed
-			std::clog << "no data read or socket closed" << std::endl;
+			if(!isNonBlocking){
+				throw std::runtime_error("Socket closed unexpectedly.");
+			}
 		}else{
 			//ERROR occured
-			std::clog << "some reading error, trying again" << std::endl;
 			if(! BIO_should_retry(bio)){
 				//Handle failed read
-				std::clog << "reading failed" << std::endl;
-				throw std::runtime_error("Socket dead.");
+				throw std::runtime_error("Socket seams dead.");
 			}
 		}
 	}
@@ -156,14 +157,14 @@ int SSLClientSocket::receive(char* buff,const int length){
 		read=BIO_read(bio, buff,length);
 		if(read==0){
 			//No data or closed
-			std::clog << "no data read or socket closed" << std::endl;
+			if(!isNonBlocking){
+				throw std::runtime_error("Socket closed unexpectedly.");
+			}
 		}else if(read<0){
 			//ERROR occured
-			std::clog << "some reading error, trying again" << std::endl;
 			if(! BIO_should_retry(bio)){
 				//Handle failed read
-				std::clog << "reading failed" << std::endl;
-				throw std::runtime_error("Socket dead.");
+				throw std::runtime_error("Socket seams dead.");
 			}
 		}
 		return read;
