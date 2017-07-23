@@ -175,5 +175,6 @@ int main(int argc,char** argv){
 	if(mySocket!=NULL){
 		delete mySocket;
 	}
+	google::protobuf::ShutdownProtobufLibrary();
 	return 0;
 }
