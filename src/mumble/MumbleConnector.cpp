@@ -15,7 +15,8 @@ username(username),
 password(password),
 serverSyncd(false),
 receiveLoopRuns(false),
-ping(false){
+ping(false),
+dispatchThreads(0){
 }
 
 MumbleConnector::~MumbleConnector(){
@@ -46,13 +47,13 @@ void MumbleConnector::connect(){
 void MumbleConnector::disconnect(){
 	serverSyncd=false;
 	socket->disconnect();
-	receiveLoopRuns=false;
-	if(receiveThread.joinable()){
-		receiveThread.join();
-	}
 	ping=false;
 	if(pingThread.joinable()){
 		pingThread.join();
+	}
+	receiveLoopRuns=false;
+	if(receiveThread.joinable()){
+		receiveThread.join();
 	}
 }
 
@@ -123,12 +124,17 @@ void MumbleConnector::handleReceives(){
 				msg.clear();
 				msg.resize(header.getMessageLength(),'\0');
 				inStream.read(&msg[0],header.getMessageLength());
+				if(dispatchThreads==0){
+					dispatchLock.lock();
+				}
+				dispatchThreads++;
 				std::thread(&MumbleConnector::dispatchMessage,this,header,msg).detach();
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	receiveLoopRuns=false;
+	dispatchLock.lock();
 }
 
 void MumbleConnector::connection(){
@@ -183,6 +189,10 @@ void MumbleConnector::dispatchMessage(const MumbleHeader header, const std::stri
 		default: std::clog<< "dunno what this is" <<std::endl; break;
 	}
 #undef MUMBLE_MESSAGE_TYPE
+	dispatchThreads--;
+	if(dispatchThreads<1){
+		dispatchLock.unlock();
+	}
 }
 //}}}
 

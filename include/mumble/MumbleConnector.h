@@ -78,6 +78,8 @@ class MumbleConnector: public Connector{
 		std::atomic<bool> serverSyncd;
 		std::atomic<bool> receiveLoopRuns;
 		std::atomic<bool> ping;
+		std::mutex dispatchLock;
+		std::atomic<int> dispatchThreads;
 		int channelID=-1;
 		int sessionID=-1;//TODO: the connector (sadly) needs to keep track of the users and channels
 		SSLClientSocket* socket=NULL;
