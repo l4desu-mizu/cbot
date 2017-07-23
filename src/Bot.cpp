@@ -14,6 +14,11 @@ die(false){
 	connection->connect();
 }
 Bot::~Bot(){
+	connection->disconnect();
+	connection->removeChannelListener(this);
+	connection->removeUserListener(this);
+	connection->removeTextListener(this);
+	connection->removeConnectionListener(this);
 }
 void Bot::notify(const ConnectionEvent e){
 	switch(e){
