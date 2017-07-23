@@ -91,7 +91,7 @@ class MumbleConnector: public Connector{
 		void auth();
 		void sendProtoMessage(const MumbleMessageType& msgType,const std::string& message);
 		void sendProtoMessage(const MumbleMessageType& msgType,const ::google::protobuf::Message& message);
-		void dispatchMessage(const MumbleHeader& header, const std::string& message);
+		void dispatchMessage(const MumbleHeader header, const std::string message);
 
 		void pingLoop();
 

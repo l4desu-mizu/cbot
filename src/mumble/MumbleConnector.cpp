@@ -170,7 +170,7 @@ void MumbleConnector::sendProtoMessage(const MumbleMessageType& msgType,const ::
 }
 
 //{{{
-void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::string& message){
+void MumbleConnector::dispatchMessage(const MumbleHeader header, const std::string message){
 	//easy switchcase generation, call a handle method for each Proto-Type
 #define MUMBLE_MESSAGE_TYPE(x) case MumbleMessageType:: x:{\
 		MumbleProto:: x tmp;\
