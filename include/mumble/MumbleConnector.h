@@ -7,6 +7,8 @@
 #include "ConnectionListener.h"
 #include <thread>
 #include <iostream>
+#include <atomic>
+#include <mutex>
 
 #define HEADER_SIZE 6
 #define HEADER_TYPE_SIZE 2
@@ -73,14 +75,15 @@ class MumbleConnector: public Connector{
 	private:
 		const std::string username;
 		const std::string password;
-		bool serverSyncd=false;
+		std::atomic<bool> serverSyncd;
+		std::atomic<bool> receiveLoopRuns;
+		std::atomic<bool> ping;
 		int channelID=-1;
 		int sessionID=-1;//TODO: the connector (sadly) needs to keep track of the users and channels
 		SSLClientSocket* socket=NULL;
 		MumbleProto::CryptSetup udpCrypto;
+		std::mutex pingLock;
 		MumbleProto::Ping pingPackage;
-		bool receiveLoopRuns=false;
-		bool ping=false;
 		std::thread receiveThread;
 		std::thread pingThread;
 		void handleReceives();

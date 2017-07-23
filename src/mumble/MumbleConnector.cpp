@@ -12,11 +12,13 @@
 MumbleConnector::MumbleConnector(SSLClientSocket* socket, const std::string username, const std::string password):
 socket(socket),
 username(username),
-password(password){
+password(password),
+serverSyncd(false),
+receiveLoopRuns(false),
+ping(false){
 }
 
 MumbleConnector::~MumbleConnector(){
-	std::clog << "connector ends" << std::endl;
 	disconnect();
 }
 
@@ -103,7 +105,6 @@ void MumbleConnector::handleReceives(){
 			tmp=(socket->receive());
 		}catch(std::runtime_error& e){
 			notifyListeners(ConnectionEvent::Disconnect);
-			disconnect();
 			break;
 		}
 		const int inlength=tmp.size();
@@ -187,6 +188,7 @@ void MumbleConnector::dispatchMessage(const MumbleHeader& header, const std::str
 
 void MumbleConnector::pingLoop(){
 	while(ping){//TODO: count ping packages and inform server about delays
+		std::lock_guard<std::mutex> lock(pingLock);
 		pingPackage.set_timestamp(TIME_IN_MS);
 		sendProtoMessage(MumbleMessageType::Ping,pingPackage);
 		for(int i=0;i<PING_TIMEOUT*2;i++){
@@ -305,8 +307,8 @@ void MumbleConnector::handle(const MumbleProto::SuggestConfig& configMsg){
 	std::clog<< "SuggestConfig" <<std::endl;
 }
 void MumbleConnector::handle(const MumbleProto::Ping& pong){
+	std::lock_guard<std::mutex> lock(pingLock);
 	pingPackage.set_tcp_packets(pingPackage.tcp_packets()+1);
-	std::clog<< "pong" <<std::endl;
 }
 
 //unused handler
