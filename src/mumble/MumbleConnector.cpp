@@ -69,6 +69,20 @@ void MumbleConnector::updateUserInfo(const User& user){
 	sendProtoMessage(MumbleMessageType::UserState, users);
 }
 
+void MumbleConnector::moveToTextChat(const Channel& channel){
+	MumbleProto::UserState stateChange;
+	stateChange.set_session(sessionID);
+	stateChange.set_channel_id(channel.getID());
+	sendProtoMessage(MumbleMessageType::UserState, stateChange);
+}
+
+void MumbleConnector::moveToTextChat(const User& user, const Channel& channel){
+	MumbleProto::UserState stateChange;
+	stateChange.set_session(user.getID());
+	stateChange.set_channel_id(channel.getID());
+	sendProtoMessage(MumbleMessageType::UserState, stateChange);
+}
+
 void MumbleConnector::sendTextMessage(const std::string& message){
 	MumbleProto::TextMessage text;
 	text.set_actor(sessionID);
@@ -112,14 +126,6 @@ void MumbleConnector::whisperTextMessage(const std::vector<Channel>& channels,co
 	text.set_message(message);
 	sendProtoMessage(MumbleMessageType::TextMessage, text);
 }
-
-void MumbleConnector::moveToTextChat(const Channel& channel){
-	MumbleProto::UserState stateChange;
-	stateChange.set_session(sessionID);
-	stateChange.set_channel_id(channel.getID());
-	sendProtoMessage(MumbleMessageType::UserState, stateChange);
-}
-
 
 void MumbleConnector::handleReceives(){
 	while(receiveLoopRuns){

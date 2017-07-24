@@ -14,6 +14,7 @@ class Connector{
 		virtual void disconnect()=0;
 		virtual void updateUserInfo(const User& u)=0;
 		virtual void moveToTextChat(const Channel& c)=0;
+		virtual void moveToTextChat(const User& u,const Channel& c)=0;
 		virtual void sendTextMessage(const std::string& message)=0;
 		virtual void whisperTextMessage(const User& user, const std::string& message)=0;
 		virtual void whisperTextMessage(const Channel& channel, const std::string& message)=0;

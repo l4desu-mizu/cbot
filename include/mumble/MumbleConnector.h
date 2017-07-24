@@ -66,6 +66,7 @@ class MumbleConnector: public Connector{
 		void disconnect();
 		void updateUserInfo(const User& user);
 		void moveToTextChat(const Channel& c);
+		void moveToTextChat(const User& u, const Channel& c);
 		void sendTextMessage(const std::string& message);
 		void whisperTextMessage(const User& user, const std::string& message);
 		void whisperTextMessage(const Channel& channel, const std::string& message);
