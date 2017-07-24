@@ -58,6 +58,13 @@ template <class X>
 inline
 void SimpleList<X>::add(X entity){
 	std::lock_guard<std::mutex> lock(listMutex);
+	entities.push_back(entity);
+}
+
+template <>
+inline
+void SimpleList<Entity>::add(Entity entity){
+	std::lock_guard<std::mutex> lock(listMutex);
 
 	//contains this element already?
 	const auto it=std::find(entities.begin(), entities.end(), entity);
@@ -70,6 +77,66 @@ void SimpleList<X>::add(X entity){
 	}else{//does not contain the element
 		entities.push_back(entity);
 	}
+}
+
+template <>
+inline
+void SimpleList<Channel>::add(Channel entity){
+	std::lock_guard<std::mutex> lock(listMutex);
+
+	//contains this element already?
+	const auto it=std::find(entities.begin(), entities.end(), entity);
+	if(it != entities.end()){
+		it->setID(entity.getID());
+		it->setConcern(entity.getConcern());
+		if(entity.getName().size()>0){//only update name if there is actually one
+			it->setName(entity.getName());
+		}
+	}else{//does not contain the element
+		entities.push_back(entity);
+	}
+}
+
+template <>
+inline
+void SimpleList<User>::add(User entity){
+	std::lock_guard<std::mutex> lock(listMutex);
+
+	//contains this element already?
+	const auto it=std::find(entities.begin(), entities.end(), entity);
+	if(it != entities.end()){
+		it->setID(entity.getID());
+		it->setConcern(entity.getConcern());
+		if(entity.getName().size()>0){//only update name if there is actually one
+			it->setName(entity.getName());
+		}
+	}else{//does not contain the element
+		entities.push_back(entity);
+	}
+}
+
+template <>
+inline
+Channel* SimpleList<Channel>::getAllocated(const int id){
+	std::lock_guard<std::mutex> lock(listMutex);
+	for(auto it=entities.begin();it!=entities.end();it++){
+		if(it->getID()==id){
+			return &(*it);
+		}
+	}
+	return NULL;
+}
+
+template <>
+inline
+User* SimpleList<User>::getAllocated(const int id){
+	std::lock_guard<std::mutex> lock(listMutex);
+	for(auto it=entities.begin();it!=entities.end();it++){
+		if(it->getID()==id){
+			return &(*it);
+		}
+	}
+	return NULL;
 }
 
 template <>
@@ -109,11 +176,36 @@ X* SimpleList<X>::getAllocated(const X& entity){
 
 template <>
 inline
+void SimpleList<User>::remove(const int id){
+	std::lock_guard<std::mutex> lock(listMutex);
+	for(auto it=entities.begin();it!=entities.end();it++){
+		if(it->getID()==id){
+			entities.erase(it);
+			break;
+		}
+	}
+}
+
+template <>
+inline
+void SimpleList<Channel>::remove(const int id){
+	std::lock_guard<std::mutex> lock(listMutex);
+	for(auto it=entities.begin();it!=entities.end();it++){
+		if(it->getID()==id){
+			entities.erase(it);
+			break;
+		}
+	}
+}
+
+template <>
+inline
 void SimpleList<Entity>::remove(const int id){
 	std::lock_guard<std::mutex> lock(listMutex);
 	for(auto it=entities.begin();it!=entities.end();it++){
 		if(it->getID()==id){
 			entities.erase(it);
+			break;
 		}
 	}
 }
