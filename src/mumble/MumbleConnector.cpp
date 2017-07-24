@@ -59,6 +59,7 @@ void MumbleConnector::disconnect(){
 	}
 	if(dispatchThreads>0){
 		dispatchLock.lock();
+		dispatchLock.unlock();
 	}
 }
 
