@@ -3,6 +3,7 @@
 #endif
 
 #include "SSLClientSocket.h"
+#include "MoveMumbleBot.h"
 #include "SimpleMumbleBot.h"
 #include "mumble/MumbleConnector.h"
 #include <libconfig.h++>
@@ -18,6 +19,7 @@
 
 #define SIMPLE_MUMBLE_BOT "SimpleMumbleBot"
 #define HTTP_MUMBLE_BOT "HttpMumbleBot"
+#define MOVE_MUMBLE_BOT "MoveMumbleBot"
 
 //cfg keys
 #define TYPE_KEY "type"
@@ -146,15 +148,17 @@ int main(int argc,char** argv){
 		mySocket = new SSLClientSocket(botInfo.server,botInfo.port,botInfo.certFile,botInfo.certKey);
 		connector = new MumbleConnector(mySocket,botInfo.username,botInfo.password);
 
-#ifdef HTTP_ENABLED
 		if(botInfo.type==HTTP_MUMBLE_BOT){
+		#ifdef HTTP_ENABLED
 			bot = new HttpMumbleBot(connector,botInfo.script,botInfo.channel);
+		#else
+			std::cout << "Http not enabled, install curl and rerun build." << std::endl;
+		#endif
+		}else if(botInfo.type==MOVE_MUMBLE_BOT){
+			bot = new MoveMumbleBot(connector,botInfo.channel);
 		}else{
-#endif
 			bot = new SimpleMumbleBot(connector,botInfo.channel);
-#ifdef HTTP_ENABLED
 		}
-#endif
 
 		//run the bot
 		bot->preRun();

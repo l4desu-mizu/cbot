@@ -31,6 +31,7 @@ SET(BASE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/User.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SimpleMumbleBot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/MoveMumbleBot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/SimpleList.hpp
 )
 SET(HTTP_SRC
