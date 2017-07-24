@@ -34,8 +34,8 @@ void Bot::notify(const ConnectionEvent e){
 			users.clear();
 			std::lock_guard<std::mutex> lockMe(meLock);
 			std::lock_guard<std::mutex> lockChannel(channelLock);
-			me=NULL;
-			currentChannel=NULL;
+			me=Entity();
+			currentChannel=Entity();
 			clearQueue();
 	}
 }
@@ -52,20 +52,20 @@ void Bot::notify(const Entity& e){
 		channels.add(c);
 		if(c.imHere()){
 			std::lock_guard<std::mutex> lock(channelLock);
-			if(currentChannel!=NULL){
-				currentChannel->setConcern(false);
+			if(currentChannel.getType()!=EntityType::None){
+				currentChannel.setConcern(false);
 			}
-			currentChannel=channels.getAllocated(c);
+			currentChannel=c;
 		}
 	}else if(e.getType()==EntityType::User_type){
 		User u=e;
 		users.add(u);
 		if(u.isMe()){
 			std::lock_guard<std::mutex> lock(meLock);
-			if(me!=NULL){
-				me->setConcern(false);
+			if(me.getType()!=EntityType::None){
+				me.setConcern(false);
 			}
-			me=users.getAllocated(u);
+			me=u;
 		}
 	}
 }
@@ -112,28 +112,19 @@ bool Bot::reconnect(){
 	}
 	return preRun();//"reinit"
 }
-User Bot::getUserData(const int id){
-	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&users);
-	User user=*ents->getAllocated(id);
-	return user;
-}
-Channel Bot::getChannelData(const int id){
-	SimpleList<Entity>* ents=reinterpret_cast<SimpleList<Entity>*>(&channels);
-	Channel channel=*ents->getAllocated(id);
-	return channel;
-}
 void Bot::updateData(Entity* ent){
-	Entity* pEnt=NULL;
-	if(ent->getType()==EntityType::User_type){
-		pEnt=users.getAllocated(*ent);
-	}else if(ent->getType()==EntityType::Channel_type){
-		pEnt=channels.getAllocated(*ent);
-	}
-	if(pEnt==NULL){
+	Entity pEnt;
+	try{
+		if(ent->getType()==EntityType::User_type){
+			pEnt=users.getCopy(*ent);
+		}else if(ent->getType()==EntityType::Channel_type){
+			pEnt=channels.getCopy(*ent);
+		}
+	}catch(std::runtime_error& e){
 		return;
 	}
-	ent->setConcern(pEnt->getConcern());
-	ent->setName(pEnt->getName());
+	ent->setConcern(pEnt.getConcern());
+	ent->setName(pEnt.getName());
 }
 
 void Bot::clearQueue(){

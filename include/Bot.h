@@ -32,12 +32,10 @@ class Bot: public ConnectionListener,public TextListener,public EntityListener,p
 		std::string myName;
 		std::mutex meLock;
 		std::mutex channelLock;
-		User* me=NULL;
-		Channel* currentChannel=NULL;
+		User me;
+		Channel currentChannel;
 		bool reconnect();
 		virtual bool respond(const Text& text)=0;
-		User getUserData(const int id);
-		Channel getChannelData(const int id);
 		void updateData(Entity* ent);
 	private:
 		void clearQueue();
