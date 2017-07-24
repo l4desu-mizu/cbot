@@ -155,7 +155,7 @@ int main(int argc,char** argv){
 			std::cout << "Http not enabled, install curl and rerun build." << std::endl;
 		#endif
 		}else if(botInfo.type==MOVE_MUMBLE_BOT){
-			bot = new MoveMumbleBot(connector,botInfo.channel);
+			bot = new MoveMumbleBot(connector,botInfo.channel,botInfo.script);
 		}else{
 			bot = new SimpleMumbleBot(connector,botInfo.channel);
 		}

@@ -5,7 +5,7 @@
 
 class MoveMumbleBot:public Bot{
 	public:
-		MoveMumbleBot(Connector* connection,const std::string targetChannel);
+		MoveMumbleBot(Connector* connection,const std::string targetChannel,const std::string defaultMessage);
 		~MoveMumbleBot();
 		void notify(const Entity& e);
 		bool run();
@@ -14,6 +14,7 @@ class MoveMumbleBot:public Bot{
 		bool respond(const Text& text);
 	private:
 		const std::string targetChannelName;
+		const std::string defaultMessage;
 		Channel targetChannel;
 		std::mutex moveTargetsLock;
 		std::queue<User> moveTargets;

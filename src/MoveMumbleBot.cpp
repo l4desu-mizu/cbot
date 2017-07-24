@@ -2,7 +2,10 @@
 #include <iostream>
 
 
-MoveMumbleBot::MoveMumbleBot(Connector* connection,const std::string targetChannel):Bot(connection),targetChannelName(targetChannel){
+MoveMumbleBot::MoveMumbleBot(Connector* connection,const std::string targetChannel,const std::string defaultMessage):
+Bot(connection),
+targetChannelName(targetChannel),
+defaultMessage(defaultMessage){
 }
 MoveMumbleBot::~MoveMumbleBot(){
 }
@@ -33,6 +36,7 @@ bool MoveMumbleBot::run(){
 	if(moveTargets.size()>0){
 		std::lock_guard<std::mutex> lock(moveTargetsLock);
 		User u=moveTargets.front();
+		connection->whisperTextMessage(u,defaultMessage);
 		connection->moveToTextChat(u,targetChannel);
 		moveTargets.pop();
 	}
