@@ -1,8 +1,9 @@
 #include "Entities.h"
 #include <algorithm>
 
-Entity::Entity(const int id,const std::string name,const  EntityType type, const bool myConcern):id(id),name(name),type(type),myConcern(myConcern){
-}
+Entity::Entity():Entity(-1,"N.A",EntityType::None,false){}
+Entity::Entity(const int id,const std::string name,const  EntityType type, const bool myConcern):id(id),name(name),type(type),myConcern(myConcern){}
+Entity::~Entity(){}
 bool Entity::operator==(const Entity& otherEntity) const{
 	return this->id==otherEntity.getID()&&this->type==otherEntity.getType();
 }
@@ -34,6 +35,7 @@ bool Entity::getConcern() const{
 	return myConcern;
 }
 
+User::User():Entity(){}
 User::User(const int id, const std::string name, bool me):Entity(id,name,EntityType::User_type,me){
 }
 User::User(const Entity& entity):User(entity.getID(),entity.getName(),entity.getConcern()){
@@ -47,6 +49,7 @@ User& User::operator=(const Entity& otherEntity){
 bool User::isMe(){
 	return this->myConcern;
 }
+Channel::Channel():Entity(){}
 Channel::Channel(const int id, const std::string name, bool here):Entity(id,name,EntityType::Channel_type,here){
 }
 Channel::Channel(const Entity& entity):Channel(entity.getID(),entity.getName(),entity.getConcern()){

@@ -3,12 +3,14 @@
 
 enum EntityType{
 	Channel_type,
-	User_type
+	User_type,
+	None
 };
 class Entity{
 	public:
+		Entity();
 		//Entity(const Entity& entity);
-		virtual ~Entity(){}
+		~Entity();
 		bool operator==(const Entity& otherEntity) const;
 		Entity& operator=(const Entity& entity);
 		void setID(const int newID);
@@ -19,7 +21,7 @@ class Entity{
 		EntityType getType() const;
 		bool getConcern() const;
 	protected:
-		Entity(const int id,const std::string name, const EntityType type, bool myConcern);
+		Entity(const int id,const std::string name, const EntityType type, bool myConcern=false);
 		int id;
 		std::string name;
 		bool myConcern;
@@ -29,6 +31,7 @@ class Entity{
 
 class User:public Entity{
 	public:
+		User();
 		User(const int id, const std::string name, bool me=false);
 		User(const Entity& entity);
 		~User();
@@ -38,6 +41,7 @@ class User:public Entity{
 
 class Channel:public Entity{
 	public:
+		Channel();
 		Channel(const int id, const std::string name, bool here=false);
 		Channel(const Entity& entity);
 		~Channel();
