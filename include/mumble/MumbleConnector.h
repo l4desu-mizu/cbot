@@ -97,6 +97,8 @@ class MumbleConnector: public Connector{
 
 		void pingLoop();
 
+		void logProtoMessage(const ::google::protobuf::Message& message);
+
 		void handle(const MumbleProto::Version& version);
 		void handle(const MumbleProto::Reject& rejectMsg);
 		void handle(const MumbleProto::ServerSync& syncMsg);

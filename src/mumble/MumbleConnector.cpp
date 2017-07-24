@@ -216,19 +216,20 @@ void MumbleConnector::pingLoop(){
 		}
 	}
 }
+void MumbleConnector::logProtoMessage(const ::google::protobuf::Message& message){
+	std::string output;
+	google::protobuf::TextFormat::PrintToString(message,&output);
+	std::clog<< output <<std::endl;
+}
 
 //message handler
 void MumbleConnector::handle(const MumbleProto::Version& version){
 	std::clog<< "version: " <<std::endl;
-	std::string output;
-	google::protobuf::TextFormat::PrintToString(version,&output);
-	std::clog<< output <<std::endl;
+	logProtoMessage(version);
 }
 void MumbleConnector::handle(const MumbleProto::Reject& rejectMsg){
 	std::clog<< "Reject" <<std::endl;
-	std::string output;
-	google::protobuf::TextFormat::PrintToString(rejectMsg,&output);
-	std::clog<< output <<std::endl;
+	logProtoMessage(rejectMsg);
 }
 void MumbleConnector::handle(const MumbleProto::ServerSync& syncMsg){
 	std::clog<< "ServerSync" <<std::endl;
@@ -261,6 +262,7 @@ void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 	}
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
+	logProtoMessage(stateMsg);
 	std::clog<< "UserState" <<std::endl;
 	//update users
 	if(stateMsg.has_session()){
@@ -316,6 +318,7 @@ void MumbleConnector::handle(const MumbleProto::PermissionQuery& queryMsg){
 }
 void MumbleConnector::handle(const MumbleProto::CodecVersion& codecMsg){
 	std::clog<< "CodecVersion" <<std::endl;
+	logProtoMessage(codecMsg);
 }
 void MumbleConnector::handle(const MumbleProto::ServerConfig& configMsg){
 	std::clog<< "ServerConfig" <<std::endl;
