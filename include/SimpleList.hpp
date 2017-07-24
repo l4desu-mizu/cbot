@@ -13,8 +13,8 @@ class SimpleList{
 		~SimpleList();
 		bool contains(const X& entity);
 		void add(X entity);
-		X* getAllocated(const X& entity);
-		X* getAllocated(const int id);
+		X getCopy(const X& entity);
+		X getCopy(const int id);
 		void remove(const int id);
 		void remove(const X& entity);
 		std::vector<X> getCurrent();
@@ -117,61 +117,61 @@ void SimpleList<User>::add(User entity){
 
 template <>
 inline
-Channel* SimpleList<Channel>::getAllocated(const int id){
+Channel SimpleList<Channel>::getCopy(const int id){
 	std::lock_guard<std::mutex> lock(listMutex);
 	for(auto it=entities.begin();it!=entities.end();it++){
 		if(it->getID()==id){
-			return &(*it);
+			return (*it);
 		}
 	}
-	return NULL;
+	throw std::runtime_error("Item not found");
 }
 
 template <>
 inline
-User* SimpleList<User>::getAllocated(const int id){
+User SimpleList<User>::getCopy(const int id){
 	std::lock_guard<std::mutex> lock(listMutex);
 	for(auto it=entities.begin();it!=entities.end();it++){
 		if(it->getID()==id){
-			return &(*it);
+			return (*it);
 		}
 	}
-	return NULL;
+	throw std::runtime_error("Item not found");
 }
 
 template <>
 inline
-Entity* SimpleList<Entity>::getAllocated(const int id){
+Entity SimpleList<Entity>::getCopy(const int id){
 	std::lock_guard<std::mutex> lock(listMutex);
 	for(auto it=entities.begin();it!=entities.end();it++){
 		if(it->getID()==id){
-			return &(*it);
+			return (*it);
 		}
 	}
-	return NULL;
+	throw std::runtime_error("Item not found");
 }
 
 template <class X>
 inline
-X* SimpleList<X>::getAllocated(const int id){
+X SimpleList<X>::getCopy(const int id){
 	std::lock_guard<std::mutex> lock(listMutex);
 	auto it=entities.begin();
 	for(int i=0;i<id&&it!=entities.end();i++,it++){}
 	if(it!=entities.end()){
-		return &(*it);
+		return (*it);
 	}
-	return NULL;
+	throw std::runtime_error("Item not found");
 }
 
 template <class X>
 inline
-X* SimpleList<X>::getAllocated(const X& entity){
+X SimpleList<X>::getCopy(const X& entity){
 	std::lock_guard<std::mutex> lock(listMutex);
 	auto it=std::find(entities.begin(), entities.end(), entity);
 	if( it != entities.end()) {
-		return &(*it);
+		return (*it);
 	}
-	return NULL;
+	throw std::runtime_error("Item not found");
 }
 
 template <>
