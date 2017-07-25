@@ -19,6 +19,10 @@ Bot::~Bot(){
 	connection->removeUserListener(this);
 	connection->removeTextListener(this);
 	connection->removeConnectionListener(this);
+	if(me!=NULL){
+		delete me;
+		me=NULL;
+	}
 }
 void Bot::notify(const ConnectionEvent e){
 	switch(e){
@@ -32,42 +36,63 @@ void Bot::notify(const ConnectionEvent e){
 			connected=false;
 			channels.clear();
 			users.clear();
-			std::lock_guard<std::mutex> lockMe(meLock);
-			std::lock_guard<std::mutex> lockChannel(channelLock);
-			me=Entity();
-			currentChannel=Entity();
+			if(me!=NULL){
+				std::lock_guard<std::mutex> lockMe(meLock);
+				delete me;
+				me=NULL;
+			}
 			clearQueue();
 	}
 }
 void Bot::notify(const Text& text){
 	Text localText=text;
-	updateData(&localText.from);
-	updateData(&localText.to);
+	updateUserData(reinterpret_cast<User*>(&localText.from));
+	if(localText.isPrivate){
+		updateUserData(reinterpret_cast<User*>(&localText.to));
+	}else{
+		updateChannelData(reinterpret_cast<Channel*>(&localText.to));
+	}
 	std::lock_guard<std::mutex> lock(textingMutex);
 	receivedTexts.push(localText);
 }
-void Bot::notify(const Entity& e){
-	if(e.getType()==EntityType::Channel_type){
-		Channel c=e;
-		channels.add(c);
-		if(c.imHere()){
-			std::lock_guard<std::mutex> lock(channelLock);
-			currentChannel=c;
-		}
-	}else if(e.getType()==EntityType::User_type){
-		User u=e;
-		users.add(u);
-		if(u.isMe()){
-			std::lock_guard<std::mutex> lock(meLock);
-			me=u;
-		}
+void Bot::notify(const Channel& e,const EntityEvent event){
+	switch(event){
+		case EntityEvent::Add:
+			channels.add(e);
+			break;
+		case EntityEvent::Remove:
+			channels.remove(e.getID());
+			break;
 	}
 }
-void Bot::unnotify(const Entity& e){
-	if(e.getType()==EntityType::Channel_type){
-		channels.remove(e.getID());
-	}else if(e.getType()==EntityType::User_type){
-		users.remove(e.getID());
+void Bot::notify(const User& e,const EntityEvent event){
+	switch(event){
+		case EntityEvent::UpdateUser:
+			{
+				std::lock_guard<std::mutex> lock(meLock);
+				if(me==NULL){//unknown user
+					me = new User(e.getID(),e.getName(),e.getChannelID());
+				}else{//known user but state changed
+					me->setID(e.getID());
+					if(e.getName().size()>0){
+						me->setName(e.getName());
+					}
+					if(e.getChannelID()!=-1){
+						me->setChannelID(e.getChannelID());
+					}
+				}
+			}
+		case EntityEvent::Add://still add user to list
+			users.add(e);
+			break;
+		case EntityEvent::Remove:
+			if(e.getID()==me->getID()){//known user but got deleted
+				std::lock_guard<std::mutex> lock(meLock);
+				delete me;
+				me=NULL;
+			}
+			users.remove(e.getID());
+			break;
 	}
 }
 
@@ -106,19 +131,24 @@ bool Bot::reconnect(){
 	}
 	return preRun();//"reinit"
 }
-void Bot::updateData(Entity* ent){
-	Entity pEnt;
+
+void Bot::updateUserData(User* user){
 	try{
-		if(ent->getType()==EntityType::User_type){
-			pEnt=users.getCopy(*ent);
-		}else if(ent->getType()==EntityType::Channel_type){
-			pEnt=channels.getCopy(*ent);
-		}
+		User savedUser=users.getCopy(*user);//can throw
+		user->setName(savedUser.getName());//wont occur if thrown
+		user->setChannelID(savedUser.getChannelID());
 	}catch(std::runtime_error& e){
-		return;
+		//didn't find user so cant update info
 	}
-	ent->setConcern(pEnt.getConcern());
-	ent->setName(pEnt.getName());
+}
+
+void Bot::updateChannelData(Channel* channel){
+	try{
+		Channel savedChannel=channels.getCopy(*channel);
+		channel->setName(savedChannel.getName());
+	}catch(std::runtime_error& e){
+		//didn't find channel so cant update info
+	}
 }
 
 void Bot::clearQueue(){

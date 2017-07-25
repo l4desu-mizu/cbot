@@ -1,7 +1,8 @@
 #pragma once
 #include "SimpleList.hpp"
 #include "TextListener.h"
-#include "EntityListener.h"
+#include "UserListener.h"
+#include "ChannelListener.h"
 #include "ConnectionListener.h"
 #include "Connector.h"
 #include "IBot.h"
@@ -10,14 +11,14 @@
 #include <queue>
 #include <atomic>
 
-class Bot: public ConnectionListener,public TextListener,public EntityListener,public IBot{
+class Bot: public ConnectionListener,public TextListener,public UserListener,public ChannelListener,public IBot{
 	public:
 		Bot(Connector* connection);
 		~Bot();
 		void notify(const ConnectionEvent e);
 		void notify(const Text& text);
-		void notify(const Entity& e);
-		void unnotify(const Entity& e);
+		void notify(const User& e,const EntityEvent event);
+		void notify(const Channel& e,const EntityEvent event);
 		bool preRun();
 		bool run();
 	protected:
@@ -31,12 +32,11 @@ class Bot: public ConnectionListener,public TextListener,public EntityListener,p
 		int lastTextQueueSize=0;
 		std::string myName;
 		std::mutex meLock;
-		std::mutex channelLock;
-		User me;
-		Channel currentChannel;
+		User* me=NULL;
 		bool reconnect();
 		virtual bool respond(const Text& text)=0;
-		void updateData(Entity* ent);
+		void updateUserData(User* user);
+		void updateChannelData(Channel* user);
 	private:
 		void clearQueue();
 };
