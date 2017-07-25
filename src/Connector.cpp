@@ -6,12 +6,12 @@ void Connector::addConnectionListener(ConnectionListener* l){
 	connectionListeners.push_back(l);
 }
 
-void Connector::addChannelListener(EntityListener* l){
+void Connector::addChannelListener(ChannelListener* l){
 	std::lock_guard<std::mutex> lock(channelListenerMutex);
 	channelListeners.push_back(l);
 }
 
-void Connector::addUserListener(EntityListener* l){
+void Connector::addUserListener(UserListener* l){
 	std::lock_guard<std::mutex> lock(userListenerMutex);
 	userListeners.push_back(l);
 }
@@ -29,7 +29,7 @@ void Connector::removeConnectionListener(ConnectionListener* l){
 	}
 }
 
-void Connector::removeChannelListener(EntityListener* l){
+void Connector::removeChannelListener(ChannelListener* l){
 	std::lock_guard<std::mutex> lock(channelListenerMutex);
 	auto it=std::find(channelListeners.begin(),channelListeners.end(),l);
 	if(it!=channelListeners.end()){
@@ -37,7 +37,7 @@ void Connector::removeChannelListener(EntityListener* l){
 	}
 }
 
-void Connector::removeUserListener(EntityListener* l){
+void Connector::removeUserListener(UserListener* l){
 	std::lock_guard<std::mutex> lock(userListenerMutex);
 	auto it=std::find(userListeners.begin(),userListeners.end(),l);
 	if(it!=userListeners.end()){
@@ -67,32 +67,16 @@ void Connector::notifyListeners(const Text& text){
 		l->notify(text);
 	}
 }
-void Connector::notifyListeners(const Entity& ent){
-	if(ent.getType()==EntityType::Channel_type){
-		std::lock_guard<std::mutex> lock(channelListenerMutex);
-		for(EntityListener* l:channelListeners){
-			l->notify(ent);
-		}
-	}else if(ent.getType()==EntityType::User_type){
-		std::lock_guard<std::mutex> lock(userListenerMutex);
-		for(EntityListener* l:userListeners){
-			l->notify(ent);
-		}
+void Connector::notifyListeners(const Channel& channel,const EntityEvent event){
+	std::lock_guard<std::mutex> lock(channelListenerMutex);
+	for(ChannelListener* l:channelListeners){
+		l->notify(channel,event);
 	}
 }
-void Connector::unnotifyListeners(const int id, const EntityType type){
-	if(type==EntityType::Channel_type){
-		std::lock_guard<std::mutex> lock(channelListenerMutex);
-		for(EntityListener* l:channelListeners){
-			const Channel c(id,"");
-			l->unnotify(c);
-		}
-	}else if(type==EntityType::User_type){
-		std::lock_guard<std::mutex> lock(userListenerMutex);
-		for(EntityListener* l:userListeners){
-			const User u(id,"");
-			l->unnotify(u);
-		}
+void Connector::notifyListeners(const User& user, const EntityEvent event){
+	std::lock_guard<std::mutex> lock(userListenerMutex);
+	for(UserListener* l:userListeners){
+		l->notify(user,event);
 	}
 }
 
