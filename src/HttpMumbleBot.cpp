@@ -32,9 +32,8 @@ bool HttpMumbleBot::preRun(){
 bool HttpMumbleBot::respond(const Text& text){
 	Text response=relay->relayMessage(text);
 	if(response.isPrivate){
-		std::vector<User> users;
-		users.push_back(text.from);
-		connection->whisperTextMessage(users,response.message);
+		User user(text.from.getID(),text.from.getName());
+		connection->whisperTextMessage(user,response.message);
 	}else{
 		connection->sendTextMessage(response.message);
 	}
