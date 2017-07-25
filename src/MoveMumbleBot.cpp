@@ -1,5 +1,4 @@
 #include "MoveMumbleBot.h"
-#include <iostream>
 
 
 MoveMumbleBot::MoveMumbleBot(Connector* connection,const std::string targetChannel,const std::string defaultMessage):
@@ -8,6 +7,10 @@ targetChannelName(targetChannel),
 defaultMessage(defaultMessage){
 }
 MoveMumbleBot::~MoveMumbleBot(){
+	if(targetChannel!=NULL){
+		delete targetChannel;
+		targetChannel=NULL;
+	}
 }
 bool MoveMumbleBot::preRun(){
 	bool res=Bot::preRun();
@@ -15,20 +18,23 @@ bool MoveMumbleBot::preRun(){
 	if(targetChannelName.size()>0){
 		for(auto it=chan.begin();it!=chan.end();it++){
 			if(it->getName()==targetChannelName){
-				targetChannel=(*it);
+				if(targetChannel==NULL){
+					targetChannel=new Channel(it->getID(),it->getName());
+				}
 				break;
 			}
 		}
 	}
 }
-void MoveMumbleBot::notify(const Entity& e){
-	std::cout << "movebot notify" << std::endl;
-	Bot::notify(e);
-	Entity copy=e;
-	Bot::updateData(&copy);
-	if(copy.getType()==EntityType::User_type&&e.getID()!=me.getID()){
-		std::lock_guard<std::mutex> lock(moveTargetsLock);
-		moveTargets.push(users.getCopy(copy));
+void MoveMumbleBot::notify(const User& e,const EntityEvent event){
+	Bot::notify(e,event);
+	if(event==EntityEvent::UpdateUser||event==EntityEvent::Add){
+		User copy=e;
+		Bot::updateUserData(&copy);
+		if(copy.getChannelID()==me->getChannelID()&&copy.getID()!=me->getID()){
+			std::lock_guard<std::mutex> lock(moveTargetsLock);
+			moveTargets.push(users.getCopy(copy));
+		}
 	}
 }
 bool MoveMumbleBot::run(){
@@ -37,7 +43,7 @@ bool MoveMumbleBot::run(){
 		std::lock_guard<std::mutex> lock(moveTargetsLock);
 		User u=moveTargets.front();
 		connection->whisperTextMessage(u,defaultMessage);
-		connection->moveToTextChat(u,targetChannel);
+		connection->moveToTextChat(u,*targetChannel);
 		moveTargets.pop();
 	}
 	return res;
