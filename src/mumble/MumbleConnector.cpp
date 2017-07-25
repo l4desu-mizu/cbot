@@ -77,6 +77,22 @@ void MumbleConnector::sendTextMessage(const std::string& message){
 	sendProtoMessage(MumbleMessageType::TextMessage, text);
 }
 
+void MumbleConnector::whisperTextMessage(const User& user,const std::string& message){
+	MumbleProto::TextMessage text;
+	text.set_actor(sessionID);
+	text.add_session(user.getID());
+	text.set_message(message);
+	sendProtoMessage(MumbleMessageType::TextMessage, text);
+}
+
+void MumbleConnector::whisperTextMessage(const Channel& channel,const std::string& message){
+	MumbleProto::TextMessage text;
+	text.set_actor(sessionID);
+	text.add_channel_id(channel.getID());
+	text.set_message(message);
+	sendProtoMessage(MumbleMessageType::TextMessage, text);
+}
+
 void MumbleConnector::whisperTextMessage(const std::vector<User>& users,const std::string& message){
 	MumbleProto::TextMessage text;
 	text.set_actor(sessionID);
@@ -97,7 +113,7 @@ void MumbleConnector::whisperTextMessage(const std::vector<Channel>& channels,co
 	sendProtoMessage(MumbleMessageType::TextMessage, text);
 }
 
-void MumbleConnector::moveToTextChat(const Entity& channel){
+void MumbleConnector::moveToTextChat(const Channel& channel){
 	MumbleProto::UserState stateChange;
 	stateChange.set_session(sessionID);
 	stateChange.set_channel_id(channel.getID());
@@ -250,15 +266,16 @@ void MumbleConnector::handle(const MumbleProto::ChannelState& stateMsg){
 	if(stateMsg.has_name()){
 		channelName=stateMsg.name();
 	}
-	const Channel newChannel(channelID,channelName,channelID==this->channelID);
+	const Channel newChannel(channelID,channelName);
 
 	//update channels
-	notifyListeners(newChannel);
+	notifyListeners(newChannel,EntityEvent::Add);
 }
 void MumbleConnector::handle(const MumbleProto::ChannelRemove& channelMsg){
 	std::clog<< "ChannelRemove" <<std::endl;
 	if(channelMsg.has_channel_id()){
-		unnotifyListeners(channelMsg.channel_id(),EntityType::Channel_type);
+		const Channel chan(channelMsg.channel_id(),"");
+		notifyListeners(chan,EntityEvent::Remove);
 	}
 }
 void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
@@ -274,14 +291,21 @@ void MumbleConnector::handle(const MumbleProto::UserState& stateMsg){
 				sessionID=userID;//TODO check for registered user_id so a name change can be observerd
 			}
 		}
-		const User newUser(userID,name,sessionID==userID);
-		notifyListeners(newUser);
+		User newUser(userID,name);
 
 		//get the id of the channel this connector is currently connected to
-		if(stateMsg.has_channel_id()&&stateMsg.session()==sessionID){
-			this->channelID=stateMsg.channel_id();
-			const Channel newChannel(this->channelID,"",true);
-			notifyListeners(newChannel);
+		if(stateMsg.has_channel_id()){
+			if(stateMsg.session()==sessionID){
+				this->channelID=stateMsg.channel_id();
+			}
+			newUser.setChannelID(stateMsg.channel_id());
+		}
+
+		if(sessionID==userID){
+			notifyListeners(newUser,EntityEvent::UpdateUser);
+		}
+		else{
+			notifyListeners(newUser,EntityEvent::Add);
 		}
 	}
 }
@@ -345,7 +369,8 @@ void MumbleConnector::handle(const MumbleProto::UserRemove& userRemoveMsg){
 			notifyListeners(ConnectionEvent::Kick);
 		}
 	}else{
-		unnotifyListeners(userRemoveMsg.session(),EntityType::User_type);
+		const User user(userRemoveMsg.session());
+		notifyListeners(userRemoveMsg.session(),EntityEvent::Remove);
 	}
 }
 void MumbleConnector::handle(const MumbleProto::BanList& banMsg){

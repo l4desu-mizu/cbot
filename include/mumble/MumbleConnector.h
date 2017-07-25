@@ -2,9 +2,6 @@
 #include "mumble.pb.h"
 #include "Connector.h"
 #include "SSLClientSocket.h"
-#include "TextListener.h"
-#include "EntityListener.h"
-#include "ConnectionListener.h"
 #include <thread>
 #include <iostream>
 #include <atomic>
@@ -68,8 +65,10 @@ class MumbleConnector: public Connector{
 		void connect();
 		void disconnect();
 		void updateUserInfo(const User& user);
-		void moveToTextChat(const Entity& c);
+		void moveToTextChat(const Channel& c);
 		void sendTextMessage(const std::string& message);
+		void whisperTextMessage(const User& user, const std::string& message);
+		void whisperTextMessage(const Channel& channel, const std::string& message);
 		void whisperTextMessage(const std::vector<User>& users, const std::string& message);
 		void whisperTextMessage(const std::vector<Channel>& channels, const std::string& message);
 	private:
