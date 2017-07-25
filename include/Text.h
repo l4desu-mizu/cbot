@@ -1,5 +1,5 @@
 #pragma once
-#include "Entities.h"
+#include "Entity.h"
 #include <string>
 
 struct Text{

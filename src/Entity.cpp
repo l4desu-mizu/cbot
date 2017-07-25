@@ -1,5 +1,4 @@
 #include "Entity.h"
-#include <algorithm>
 
 Entity::Entity(const int id,const std::string name):
 id(id),

@@ -1,5 +1,7 @@
 #pragma once
-#include "Entities.h"
+#include "Entity.h"
+#include "Channel.h"
+#include "User.h"
 #include <vector>
 #include <algorithm>
 #include <mutex>
@@ -70,7 +72,6 @@ void SimpleList<Entity>::add(Entity entity){
 	const auto it=std::find(entities.begin(), entities.end(), entity);
 	if(it != entities.end()){
 		it->setID(entity.getID());
-		it->setConcern(entity.getConcern());
 		if(entity.getName().size()>0){//only update name if there is actually one
 			it->setName(entity.getName());
 		}
@@ -88,7 +89,6 @@ void SimpleList<Channel>::add(Channel entity){
 	const auto it=std::find(entities.begin(), entities.end(), entity);
 	if(it != entities.end()){
 		it->setID(entity.getID());
-		it->setConcern(entity.getConcern());
 		if(entity.getName().size()>0){//only update name if there is actually one
 			it->setName(entity.getName());
 		}
@@ -106,9 +106,11 @@ void SimpleList<User>::add(User entity){
 	const auto it=std::find(entities.begin(), entities.end(), entity);
 	if(it != entities.end()){
 		it->setID(entity.getID());
-		it->setConcern(entity.getConcern());
 		if(entity.getName().size()>0){//only update name if there is actually one
 			it->setName(entity.getName());
+		}
+		if(entity.getChannelID()>=0){
+			it->setChannelID(entity.getChannelID());
 		}
 	}else{//does not contain the element
 		entities.push_back(entity);
