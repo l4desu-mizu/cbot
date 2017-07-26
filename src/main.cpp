@@ -1,10 +1,10 @@
 #ifdef HTTP_ENABLED
-#include "HttpMumbleBot.h"
+#include "mumble/HttpMumbleBot.h"
 #endif
 
-#include "SSLClientSocket.h"
-#include "MoveMumbleBot.h"
-#include "SimpleMumbleBot.h"
+#include "io/SSLClientSocket.h"
+#include "mumble/MoveMumbleBot.h"
+#include "mumble/SimpleMumbleBot.h"
 #include "mumble/MumbleConnector.h"
 #include <libconfig.h++>
 #include <string>

@@ -1,4 +1,4 @@
-#include "Bot.h"
+#include "bot/Bot.h"
 #include <thread>
 
 #define FLOOD_WARNING 8

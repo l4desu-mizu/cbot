@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Text.h"
+#include "model/Text.h"
 
 class TextListener{
 	public:

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Channel.h"
-#include "EntityEvents.h"
+#include "model/Channel.h"
+#include "events/EntityEvents.h"
 
 class ChannelListener{
 	public:

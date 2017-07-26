@@ -1,8 +1,8 @@
 #pragma once
-#include "ChannelListener.h"
-#include "UserListener.h"
-#include "TextListener.h"
-#include "ConnectionListener.h"
+#include "events/ChannelListener.h"
+#include "events/UserListener.h"
+#include "events/TextListener.h"
+#include "events/ConnectionListener.h"
 #include <string>
 #include <vector>
 #include <mutex>

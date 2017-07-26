@@ -1,4 +1,4 @@
-#include "MoveMumbleBot.h"
+#include "mumble/MoveMumbleBot.h"
 
 
 MoveMumbleBot::MoveMumbleBot(Connector* connection,const std::string targetChannel,const std::string defaultMessage):

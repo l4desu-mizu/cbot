@@ -1,10 +1,10 @@
 #pragma once
-#include "SimpleList.hpp"
-#include "TextListener.h"
-#include "UserListener.h"
-#include "ChannelListener.h"
-#include "ConnectionListener.h"
-#include "Connector.h"
+#include "model/SimpleList.hpp"
+#include "events/TextListener.h"
+#include "events/UserListener.h"
+#include "events/ChannelListener.h"
+#include "events/ConnectionListener.h"
+#include "io/Connector.h"
 #include "IBot.h"
 #include <string>
 #include <mutex>

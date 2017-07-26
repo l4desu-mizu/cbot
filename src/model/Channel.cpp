@@ -1,4 +1,4 @@
-#include "Channel.h"
+#include "model/Channel.h"
 
 Channel::Channel(const int id, const std::string name):
 Entity(id,name){

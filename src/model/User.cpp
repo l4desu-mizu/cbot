@@ -1,4 +1,4 @@
-#include "User.h"
+#include "model/User.h"
 
 User::User(const int id, const std::string name, const int channelID):
 Entity(id,name),channelID(channelID){

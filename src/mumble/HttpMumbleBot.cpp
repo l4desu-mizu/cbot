@@ -1,4 +1,4 @@
-#include "HttpMumbleBot.h"
+#include "mumble/HttpMumbleBot.h"
 #include <vector>
 
 HttpMumbleBot::HttpMumbleBot(Connector* connection, std::string url, std::string prefferedChannel):

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Bot.h"
+#include "bot/Bot.h"
 
 class SimpleMumbleBot:public Bot{
 	public:

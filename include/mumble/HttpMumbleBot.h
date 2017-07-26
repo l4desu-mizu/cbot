@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Bot.h"
+#include "bot/Bot.h"
 #include "extensions/http/HttpRelay.h"
 
 class HttpMumbleBot:public Bot{

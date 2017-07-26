@@ -1,7 +1,7 @@
 #pragma once
 
-#include "User.h"
-#include "EntityEvents.h"
+#include "model/User.h"
+#include "events/EntityEvents.h"
 
 class UserListener{
 	public:

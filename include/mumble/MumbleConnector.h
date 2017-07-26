@@ -1,7 +1,7 @@
 #pragma once
 #include "mumble.pb.h"
-#include "Connector.h"
-#include "SSLClientSocket.h"
+#include "io/Connector.h"
+#include "io/SSLClientSocket.h"
 #include <thread>
 #include <iostream>
 #include <atomic>

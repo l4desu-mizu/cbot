@@ -1,4 +1,4 @@
-#include "SimpleMumbleBot.h"
+#include "mumble/SimpleMumbleBot.h"
 #include <iostream>
 #include <ctime>
 

@@ -22,20 +22,20 @@ INCLUDE_DIRECTORIES(
 # add additional source files here
 SET(BASE_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Connector.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/io/Connector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/MumbleConnector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/MumbleHeader.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/SSLClientSocket.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Entity.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Channel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/User.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Bot.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/SimpleMumbleBot.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/MoveMumbleBot.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/SimpleList.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/io/SSLClientSocket.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/model/Entity.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/model/Channel.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/model/User.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/bot/Bot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/SimpleMumbleBot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/MoveMumbleBot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/include/model/SimpleList.hpp
 )
 SET(HTTP_SRC
-	${CMAKE_CURRENT_SOURCE_DIR}/src/HttpMumbleBot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/HttpMumbleBot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/extensions/http/HttpRelay.cpp
 )
 

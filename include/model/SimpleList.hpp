@@ -1,7 +1,7 @@
 #pragma once
-#include "Entity.h"
-#include "Channel.h"
-#include "User.h"
+#include "model/Entity.h"
+#include "model/Channel.h"
+#include "model/User.h"
 #include <vector>
 #include <algorithm>
 #include <mutex>
