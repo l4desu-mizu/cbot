@@ -31,7 +31,8 @@ void MoveMumbleBot::notify(const User& e,const EntityEvent event){
 	if(event==EntityEvent::UpdateUser||event==EntityEvent::Add){
 		User copy=e;
 		Bot::updateUserData(&copy);
-		if(copy.getChannelID()==me->getChannelID()&&copy.getID()!=me->getID()){
+		std::lock_guard<std::mutex> lock(meLock);
+		if(me!=NULL&&copy.getChannelID()==me->getChannelID()&&copy.getID()!=me->getID()){
 			std::lock_guard<std::mutex> lock(moveTargetsLock);
 			moveTargets.push(users.getCopy(copy));
 		}
