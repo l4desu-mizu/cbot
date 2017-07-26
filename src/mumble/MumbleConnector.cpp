@@ -49,6 +49,8 @@ void MumbleConnector::connect(){
 void MumbleConnector::disconnect(){
 	serverSyncd=false;
 	socket->disconnect();
+	sessionID=-1;
+	channelID=-1;
 	ping=false;
 	if(pingThread.joinable()){
 		pingThread.join();
