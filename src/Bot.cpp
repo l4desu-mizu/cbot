@@ -19,6 +19,7 @@ Bot::~Bot(){
 	connection->removeUserListener(this);
 	connection->removeTextListener(this);
 	connection->removeConnectionListener(this);
+	std::lock_guard<std::mutex> lockMe(meLock);
 	if(me!=NULL){
 		delete me;
 		me=NULL;
@@ -71,7 +72,8 @@ void Bot::notify(const User& e,const EntityEvent event){
 			{
 				std::lock_guard<std::mutex> lock(meLock);
 				if(me==NULL){//unknown user
-					me = new User(e.getID(),e.getName(),e.getChannelID());
+					const int chanID=(e.getChannelID()!=-1)?e.getChannelID():0;//default channel root=0
+					me = new User(e.getID(),e.getName(),chanID);
 				}else{//known user but state changed
 					me->setID(e.getID());
 					if(e.getName().size()>0){
@@ -83,7 +85,13 @@ void Bot::notify(const User& e,const EntityEvent event){
 				}
 			}
 		case EntityEvent::Add://still add user to list
-			users.add(e);
+			if(!users.contains(e)&&e.getChannelID()==-1){//set users channel to default if unknown
+				User newUser=e;
+				newUser.setChannelID(0);
+				users.add(newUser);
+			}else{
+				users.add(e);//updates
+			}
 			break;
 		case EntityEvent::Remove:
 			if(e.getID()==me->getID()){//known user but got deleted
