@@ -3,6 +3,8 @@
 #include <mutex>
 #include <queue>
 
+#define MOVE_MUMBLE_BOT "MoveMumbleBot"
+
 class MoveMumbleBot:public Bot{
 	public:
 		MoveMumbleBot(Connector* connection,const std::string targetChannel,const std::string defaultMessage);

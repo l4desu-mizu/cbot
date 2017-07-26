@@ -2,6 +2,8 @@
 
 #include "bot/Bot.h"
 
+#define SIMPLE_MUMBLE_BOT "SimpleMumbleBot"
+
 class SimpleMumbleBot:public Bot{
 	public:
 		SimpleMumbleBot(Connector* connection, const std::string channel="");

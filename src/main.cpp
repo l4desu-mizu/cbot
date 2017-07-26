@@ -17,10 +17,6 @@
 #define DEFAULT_SERVER "localhost"
 #define INI_NAME "example.cfg"
 
-#define SIMPLE_MUMBLE_BOT "SimpleMumbleBot"
-#define HTTP_MUMBLE_BOT "HttpMumbleBot"
-#define MOVE_MUMBLE_BOT "MoveMumbleBot"
-
 //cfg keys
 #define TYPE_KEY "type"
 #define CONNECTOR_KEY "connector"
