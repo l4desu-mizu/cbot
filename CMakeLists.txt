@@ -52,11 +52,16 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 find_package(LibConfig++ REQUIRED)
 include_directories(${LIBCONFIGPP_INCLUDE_DIRS})
 
+#opus (voice codec)
+find_package(Opus REQUIRED)
+include_directories(${OPUS_INCLUDE_DIRS})
+
 #mandatory libraries
 LIST(APPEND DEPENDENCIES
  	${PROTOBUF_LIBRARY}
 	${LIBCONFIGPP_LIBRARIES}
 	${OPENSSL_LIBRARIES}
+	${OPUS_LIBRARIES}
 )
 
 
