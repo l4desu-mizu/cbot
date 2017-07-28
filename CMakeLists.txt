@@ -32,6 +32,7 @@ SET(BASE_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/bot/Bot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/SimpleMumbleBot.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/mumble/MoveMumbleBot.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/audio/OpusAdapter.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/include/model/SimpleList.hpp
 )
 SET(HTTP_SRC
@@ -52,11 +53,16 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 find_package(LibConfig++ REQUIRED)
 include_directories(${LIBCONFIGPP_INCLUDE_DIRS})
 
+#opus (voice codec)
+find_package(Opus REQUIRED)
+include_directories(${OPUS_INCLUDE_DIRS})
+
 #mandatory libraries
 LIST(APPEND DEPENDENCIES
  	${PROTOBUF_LIBRARY}
 	${LIBCONFIGPP_LIBRARIES}
 	${OPENSSL_LIBRARIES}
+	${OPUS_LIBRARIES}
 )
 
 
