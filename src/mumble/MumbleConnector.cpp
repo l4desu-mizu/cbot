@@ -213,10 +213,18 @@ void MumbleConnector::dispatchMessage(const MumbleHeader header, const std::stri
 		handle(tmp);\
 		break;\
 	}
-	switch(header.getMessageType()){
-		MUMBLE_MESSAGE_TYPES_ALL
-		default: std::clog<< "dunno what this is" <<std::endl; break;
+
+	//The UDPTunnel Protobuf message is only defined as header id
+	//the actual encoding is done as udp packet, not as described
+	//in the mumble.proto, therefore it is handled differently
+	if(header.getMessageType()==MumbleMessageType::UDPTunnel){
+	}else{
+		switch(header.getMessageType()){
+			MUMBLE_MESSAGE_TYPES_ALL
+			default: std::clog<< "dunno what this is" <<std::endl; break;
+		}
 	}
+
 #undef MUMBLE_MESSAGE_TYPE
 	dispatchThreads--;
 	if(dispatchThreads<1){
