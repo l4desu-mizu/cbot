@@ -117,6 +117,9 @@ int main(int argc,char** argv){
 	}catch(libconfig::ParseException& exceptio){
 		std::cout << "Something wrong with the cfg file." << std::endl;
 		return 1;
+	}catch(libconfig::FileIOException& exception){
+		std::cout << "File does not exist." << std::endl;
+		return 1;
 	}
 
 	//config: fill botInfo with default values
