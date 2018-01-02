@@ -31,7 +31,7 @@ This Bot uses Post messaging in the form:
 
 ## Dependencies (Libs)
  - libprotobuf (see protobuf-compiler)
- - libconfig (1.5 minimum)
+ - libconfig++ (1.5 minimum)
  - openssl (1.1 I guess)
  - curl (7.52.1 minimum)
 
